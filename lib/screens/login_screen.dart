@@ -27,7 +27,7 @@ class LoginScreen extends ConsumerWidget {
           } else {
             return MainScreen(
               user: user,
-              dateShown: DateTime.now(),
+              // dateShown: DateTime.now(),
               today: DateTime.now(),
             );
           }
@@ -90,7 +90,8 @@ class _LoginScreen extends StatelessWidget {
                           }
                           return null;
                         },
-                        decoration: const InputDecoration(labelText: 'Password'),
+                        decoration:
+                            const InputDecoration(labelText: 'Password'),
                       ),
                       SizedBox(
                         height: 16,

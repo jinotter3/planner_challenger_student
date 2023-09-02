@@ -1,19 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-class TaskAddCard extends StatelessWidget {
-  TaskAddCard({super.key, required DateTime date});
+import '../models/task.dart';
 
-  final TextEditingController _subjectController = TextEditingController();
-  final TextEditingController _contentController = TextEditingController();
-  final TextEditingController _numOfQuestionsController =
-      TextEditingController();
+class TaskUpdateCard extends StatelessWidget {
+  TaskUpdateCard({super.key, required this.task, required this.updateTask});
+  final Task task;
+  final Function updateTask;
+  late final TextEditingController _subjectController =
+      TextEditingController(text: task.subject);
+  late final TextEditingController _contentController =
+      TextEditingController(text: task.title);
+  late final TextEditingController _numOfQuestionsController =
+      TextEditingController(text: task.numberOfQuestions.toString());
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("새 Task 추가"),
+      title: const Text("Task 수정"),
       content: Column(
         children: [
           TextField(
@@ -54,23 +58,20 @@ class TaskAddCard extends StatelessWidget {
                 _numOfQuestionsController.text.isEmpty) {
               return;
             }
-            final DatabaseReference _dbRef = FirebaseDatabase.instance
-                .ref("students/${FirebaseAuth.instance.currentUser!.uid}/days");
-            final DatabaseReference _taskRef =
-                _dbRef.child(DateTime.now().toString().split(" ")[0]);
-            // Append task to the list
-            final task = {
-              "subject": _subjectController.text,
-              "content": _contentController.text,
-              "numOfQuestions": _numOfQuestionsController.text,
-              "done": false,
-              "imageUrl": "",
-            };
-            _taskRef.push().set(task);
+            updateTask(
+              Task(
+                subject: _subjectController.text,
+                title: _contentController.text,
+                numberOfQuestions:
+                    int.parse(_numOfQuestionsController.text.toString()),
+                done: task.done,
+                id: task.id,
+                imageUrl: task.imageUrl,
+              ).toJson(),
+            );
             Navigator.pop(context);
-            GoRouter.of(context).refresh();
           },
-          child: const Text("추가"),
+          child: const Text("바꾸기"),
         ),
       ],
     );
