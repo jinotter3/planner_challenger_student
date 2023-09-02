@@ -41,16 +41,16 @@ class AuthService {
     // After signing in, fetch additional user data from Realtime Database
     final databaseReference = FirebaseDatabase.instance.ref();
     await databaseReference
-        .child('students/${userCredential.user!.uid}')
+        .child('students/${userCredential.user!.uid}/info')
         .once()
         .then((DatabaseEvent value) {
       print(value.snapshot.value);
       // update user info
       final map = value.snapshot.value as Map<dynamic, dynamic>;
       Student student = Student(
-        name: map['info']['name'],
-        studentId: map['info']['studentId'],
-        id: map['info']['id'],
+        name: map['name'],
+        studentId: map['studentId'],
+        id: map['id'],
       );
     });
     return Student(

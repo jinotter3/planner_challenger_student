@@ -18,8 +18,6 @@ final _key = GlobalKey<NavigatorState>();
 final routerProvider = Provider<GoRouter>(
   (ref) {
     final authState = ref.watch(authProvider);
-    final studentState = ref.watch(studentProvider);
-    final databaseReference = FirebaseDatabase.instance.ref();
     return GoRouter(
       navigatorKey: _key,
       initialLocation: authState.when(
@@ -56,6 +54,8 @@ final routerProvider = Provider<GoRouter>(
           name: MainScreen.routeName,
           builder: (context, state) => MainScreen(
             user: state.pathParameters['student'] as User,
+            // dateShown: DateTime.now(),
+            today: DateTime.now(),
           ),
         ),
         GoRoute(

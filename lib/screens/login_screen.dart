@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +27,8 @@ class LoginScreen extends ConsumerWidget {
           } else {
             return MainScreen(
               user: user,
+              // dateShown: DateTime.now(),
+              today: DateTime.now(),
             );
           }
         },
@@ -41,6 +44,7 @@ class _LoginScreen extends StatelessWidget {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   _LoginScreen({required this.authService});
 
@@ -49,38 +53,135 @@ class _LoginScreen extends StatelessWidget {
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text("Login Page"),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: 420,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Spacer(),
+                      const Text("Login Page"),
+                      TextFormField(
+                        controller: emailController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          } else if (EmailValidator.validate(value) == false) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
+                        },
+                        decoration: const InputDecoration(labelText: 'Email'),
+                      ),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          } else if (value.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
+                        decoration:
+                            const InputDecoration(labelText: 'Password'),
+                      ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (!_formKey.currentState!.validate()) return;
+                          try {
+                            await authService.signInWithEmail(
+                                email: emailController.text,
+                                password: passwordController.text);
+                          } catch (error) {
+                            if (error
+                                .toString()
+                                .startsWith('[firebase_auth/wrong-password]')) {
+                              // ignore: use_build_context_synchronously
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("로그인 실패"),
+                                    content: Text("비밀번호 오류"),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text("확인")),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else if (error
+                                .toString()
+                                .startsWith('[firebase_auth/user-not-found]')) {
+                              // ignore: use_build_context_synchronously
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("로그인 실패"),
+                                    content: Text("존재하지 않는 이메일입니다"),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text("확인")),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              // ignore: use_build_context_synchronously
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("로그인 실패"),
+                                    content: Text("알 수 없는 오류"),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text("확인")),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          }
+                        },
+                        child: const Text("Login"),
+                      ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          GoRouter.of(context).go(SignUpScreen.routeLocation);
+                        },
+                        child: const Text("Sign Up"),
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+                ),
               ),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (emailController.text.isNotEmpty &&
-                      passwordController.text.isNotEmpty) {
-                    var loginStudent = await authService.signInWithEmail(
-                        email: emailController.text,
-                        password: passwordController.text);
-                  }
-                },
-                child: const Text("Login"),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  GoRouter.of(context).go(SignUpScreen.routeLocation);
-                },
-                child: const Text("Sign Up"),
-              )
-            ],
+            ),
           ),
         ),
       ),
