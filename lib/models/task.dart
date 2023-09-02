@@ -1,33 +1,43 @@
-import 'subject.dart';
-
-enum TaskStatus {
-  REMAINING,
-  SUBMITTED,
-  CONFIRMED,
-}
-
 class Task {
   final String id;
   final String title;
-  final Subject subject;
+  final String subject;
   final int numberOfQuestions;
-  final TaskStatus status;
+  final bool done;
+  final String imageUrl;
 
   Task({
     required this.id,
     required this.title,
     required this.subject,
     required this.numberOfQuestions,
-    required this.status,
+    required this.done,
+    required this.imageUrl,
   });
 
-  static fromJson(Map e) {
-    return Task(
-      id: e['id'],
-      title: e['title'],
-      subject: Subject.fromJson(e['subject']),
-      numberOfQuestions: e['numberOfQuestions'],
-      status: TaskStatus.values[e['status']],
+  factory Task.fromJson(Map<String, dynamic> json, String key) {
+    print(json);
+    print(json['subject'].runtimeType);
+    print(json['numOfQuestions'].runtimeType);
+    print("FFFFFFFF");
+    Task task = Task(
+      id: key,
+      title: json['content'],
+      subject: json['subject'],
+      numberOfQuestions: int.parse(json['numOfQuestions']),
+      done: json['done'],
+      imageUrl: json['imageUrl'],
     );
+    return task;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'content': title,
+      'subject': subject,
+      'numOfQuestions': numberOfQuestions,
+      'done': done,
+      'imageUrl': imageUrl,
+    };
   }
 }
