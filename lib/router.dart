@@ -56,6 +56,8 @@ final routerProvider = Provider<GoRouter>(
           name: MainScreen.routeName,
           builder: (context, state) => MainScreen(
             user: state.pathParameters['student'] as User,
+            dateShown: DateTime.now(),
+            today: DateTime.now(),
           ),
         ),
         GoRoute(

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth.dart';
+import '../components/date-card.dart';
+import '../components/student-card.dart';
 import '../models/student.dart';
 
 // Using a FutureProvider for asynchronous operations
@@ -24,34 +26,58 @@ final studentDataProvider = FutureProvider<Student?>((ref) async {
 });
 
 final class MainScreen extends ConsumerWidget {
-  MainScreen({required this.user, Key? key}) : super(key: key);
+  MainScreen({
+    required this.user,
+    required this.dateShown,
+    required this.today,
+    Key? key,
+  }) : super(key: key);
 
   final User user;
   static String get routeName => 'main';
   static String get routeLocation => '/$routeName';
+  final DateTime dateShown;
+  final DateTime today;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final studentAsyncValue = ref.watch(studentDataProvider);
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            studentAsyncValue.when(
-              data: (student) => Text("Welcome ${student?.name ?? 'User'}"),
-              loading: () => CircularProgressIndicator(),
-              error: (error, stack) => Text("Error loading data"),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-              },
-              child: const Text("Logout"),
-            ),
-          ],
-        ),
+      body: Row(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              studentAsyncValue.when(
+                data: (student) => StudentCard(
+                  student: student as Student,
+                ),
+                loading: () => CircularProgressIndicator(),
+                error: (error, stack) => Text("Error loading data"),
+              ),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  DateCard(
+                    date: dateShown,
+                  ),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                },
+                child: const Text("Logout"),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

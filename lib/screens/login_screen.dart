@@ -26,6 +26,8 @@ class LoginScreen extends ConsumerWidget {
           } else {
             return MainScreen(
               user: user,
+              dateShown: DateTime.now(),
+              today: DateTime.now(),
             );
           }
         },
