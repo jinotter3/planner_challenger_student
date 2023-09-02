@@ -33,8 +33,8 @@ final dailyTaskListProvider = StreamProvider<DailyTaskList>((ref) {
   if (user == null)
     return Stream.empty(); // Handle the case when the user is null
 
-  final dbref = FirebaseDatabase.instance.ref("students");
-  final event = dbref.child(user.uid).child("days").onValue;
+  final dbref = FirebaseDatabase.instance.ref("students/${user.uid}/days");
+  final event = dbref.onValue;
   return event.map((event) {
     final map = event.snapshot.value as Map<dynamic, dynamic>;
     return DailyTaskList.fromJson(map);
