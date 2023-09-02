@@ -7,6 +7,7 @@ environment:
   sdk: '>=3.0.6 <4.0.0'
 
 dependencies:
+  email_validator: ^2.1.17
   firebase_auth: ^4.9.0
   firebase_core: ^2.15.1
   firebase_database: ^10.2.5
