@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../models/task.dart';
+import '../utils/image_loader.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'task-update-card.dart';
 
 class TaskCard extends StatefulWidget {
@@ -57,6 +59,13 @@ class _TaskCardState extends State<TaskCard> {
                     onPressed: () {
                       if (widget.currentDate.difference(DateTime.now()).inDays <
                           0) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text("에러"),
+                            content: Text("기한이 지난 과제는 수정할 수 없습니다."),
+                          ),
+                        );
                         return;
                       }
                       showDialog(
@@ -76,9 +85,37 @@ class _TaskCardState extends State<TaskCard> {
                     onPressed: () {
                       if (widget.currentDate.difference(DateTime.now()).inDays <
                           0) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text("에러"),
+                            content: Text("기한이 지난 과제는 삭제할 수 없습니다."),
+                          ),
+                        );
                         return;
                       }
-                      widget.deleteTask();
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: Text("경고"),
+                          content: Text("정말로 삭제하시겠습니까?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("취소"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                widget.deleteTask();
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("삭제"),
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
                   IconButton(
@@ -102,8 +139,35 @@ class _TaskCardState extends State<TaskCard> {
                     },
                   ),
                   widget.task.done
-                      ? Icon(
-                          Icons.check_circle,
+                      ? IconButton(
+                          icon: Icon(Icons.check_circle),
+                          onPressed: () async {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title:
+                                    Text("눌러서 이미지 다운로드 - 다운로드 후 .png 확장자로 저장"),
+                                content: InkWell(
+                                  child: Text(
+                                    "${widget.task.imageUrl}",
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                  onTap: () async {
+                                    Uri _url = Uri.parse(widget.task.imageUrl);
+                                    if (await launchUrl(_url)) {
+                                      // await launchUrl(_url);
+                                    } else {
+                                      throw 'Could not launch $_url';
+                                    }
+                                  },
+                                ),
+                              ),
+                            );
+                          },
                         )
                       : Icon(
                           Icons.check_circle_outline,

@@ -16,10 +16,6 @@ class Task {
   });
 
   factory Task.fromJson(Map<String, dynamic> json, String key) {
-    print(json);
-    print(json['subject'].runtimeType);
-    print(json['numOfQuestions'].runtimeType);
-    print("FFFFFFFF");
     Task task = Task(
       id: key,
       title: json['content'],

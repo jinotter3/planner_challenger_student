@@ -16,45 +16,7 @@ import '../components/student-card.dart';
 import '../components/task_card.dart';
 import '../models/student.dart';
 
-// Using a FutureProvider for asynchronous operations
-final studentDataProvider = FutureProvider<Student?>((ref) async {
-  final user = FirebaseAuth
-      .instance.currentUser; // assuming you want the current logged in user
-  if (user == null) return null; // Handle the case when the user is null
-
-  final dbref = FirebaseDatabase.instance.ref("students/${user.uid}/info");
-  final event = await dbref.once();
-
-  final map = event.snapshot.value as Map<dynamic, dynamic>;
-  return Student(
-    name: map['name'],
-    studentId: map['studentId'],
-    id: map['id'],
-  );
-});
-
-final dailyTaskListProvider =
-    FutureProvider.family<DailyTaskList, DateTime>((ref, currentDate) async {
-  final user = FirebaseAuth.instance.currentUser;
-
-  if (user == null) return DailyTaskList(tasks: [], date: currentDate);
-
-  String dateString = currentDate.toString().split(" ")[0];
-  final dbref =
-      FirebaseDatabase.instance.ref("students/${user.uid}/days/$dateString");
-
-  final DatabaseEvent event = await dbref.once();
-  if (event.snapshot.value == null) {
-    return DailyTaskList(tasks: [], date: currentDate);
-  }
-  final map = event.snapshot.value as Map<dynamic, dynamic>;
-  print("map: $map");
-  return DailyTaskList.fromJson(map as Map<String, dynamic>, currentDate);
-});
-
-final dateShownProvider = StateProvider<DateTime>((ref) {
-  return DateTime.now();
-});
+import './main_providers.dart';
 
 final class MainScreen extends ConsumerWidget {
   MainScreen({
@@ -73,8 +35,10 @@ final class MainScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final studentAsyncValue = ref.watch(studentDataProvider);
-    final dateProvider = ref.watch(dateShownProvider);
-    final taskListProvider = ref.watch(dailyTaskListProvider(dateProvider));
+    final dateTimeNotifier = ref.watch(dateTimeProvider);
+    print(dateTimeNotifier.selectedDate);
+    final taskListProvider =
+        ref.watch(dailyTaskListProvider(dateTimeNotifier.selectedDate));
 
     return Scaffold(
       body: Row(
@@ -95,14 +59,13 @@ final class MainScreen extends ConsumerWidget {
                 onPressed: () {
                   showDatePicker(
                     context: context,
-                    initialDate: dateProvider,
+                    initialDate: dateTimeNotifier.selectedDate,
                     firstDate: DateTime.now().subtract(Duration(days: 365)),
                     lastDate: DateTime.now().add(Duration(days: 365)),
                   ).then((value) {
                     if (value != null) {
-                      ref.read(dateShownProvider.notifier).update((date) {
-                        return value;
-                      });
+                      dateTimeNotifier.selectedDate = value;
+                      print(dateTimeNotifier.selectedDate);
                     }
                   });
                 },
@@ -117,7 +80,7 @@ final class MainScreen extends ConsumerWidget {
               Row(
                 children: [
                   DateCard(
-                    date: dateProvider,
+                    date: dateTimeNotifier.selectedDate,
                   ),
                 ],
               ),
@@ -139,17 +102,26 @@ final class MainScreen extends ConsumerWidget {
                                   .getTasksBySubject()[e]!
                                   .map((e) => TaskCard(
                                         task: e,
-                                        currentDate: dateProvider,
+                                        currentDate:
+                                            dateTimeNotifier.selectedDate,
                                         deleteTask: () {
-                                          deleteTask(e.id, dateProvider);
+                                          deleteTask(e.id,
+                                              dateTimeNotifier.selectedDate);
+                                          print(dateTimeNotifier.selectedDate);
+                                          GoRouter.of(context).refresh();
+                                          print("refreshed");
+                                          print(dateTimeNotifier.selectedDate
+                                              .toString());
                                         },
                                         updateTask: (newTask) {
-                                          updateTask(
-                                              e.id, newTask, dateProvider);
+                                          updateTask(e.id, newTask,
+                                              dateTimeNotifier.selectedDate);
+                                          GoRouter.of(context).refresh();
                                         },
                                         uploadImage: (image) {
-                                          uploadImage(
-                                              e.id, image, dateProvider);
+                                          uploadImage(e.id, image,
+                                              dateTimeNotifier.selectedDate);
+                                          GoRouter.of(context).refresh();
                                         },
                                       ))
                                   .toList(),
@@ -172,7 +144,7 @@ final class MainScreen extends ConsumerWidget {
                     context: context,
                     builder: (BuildContext context) {
                       return TaskAddCard(
-                        date: dateProvider,
+                        date: dateTimeNotifier.selectedDate,
                       );
                     },
                   );
@@ -197,6 +169,16 @@ final class MainScreen extends ConsumerWidget {
         .ref("students/${FirebaseAuth.instance.currentUser!.uid}/days");
     final dbref2 = dbref.child(dateShown.toString().split(" ")[0]);
     final dbref3 = dbref2.child(id);
+    // read image url
+    final DatabaseEvent event = await dbref3.once();
+    final map = event.snapshot.value as Map<dynamic, dynamic>;
+    final imageUrl = map["imageUrl"];
+    if (imageUrl != "") {
+      // delete image
+      final storageRef =
+          FirebaseStorage.instance.ref("students/${user.uid}/$id");
+      await storageRef.delete();
+    }
     await dbref3.remove();
     print("id: $id deleted");
     return "success";

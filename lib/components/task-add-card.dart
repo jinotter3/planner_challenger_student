@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class TaskAddCard extends StatelessWidget {
-  TaskAddCard({super.key, required DateTime date});
+  TaskAddCard({super.key, required this.date});
+
+  final DateTime date;
 
   final TextEditingController _subjectController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
@@ -57,7 +59,7 @@ class TaskAddCard extends StatelessWidget {
             final DatabaseReference _dbRef = FirebaseDatabase.instance
                 .ref("students/${FirebaseAuth.instance.currentUser!.uid}/days");
             final DatabaseReference _taskRef =
-                _dbRef.child(DateTime.now().toString().split(" ")[0]);
+                _dbRef.child(date.toString().split(" ")[0]);
             // Append task to the list
             final task = {
               "subject": _subjectController.text,
