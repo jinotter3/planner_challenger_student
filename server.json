@@ -1,0 +1,39 @@
+{
+    "students": {
+        "1": {
+            "info": {
+                "name": "John",
+                "studentId": "1234",
+                "id": 1
+            },
+            "days": [
+                {
+                    "date": "2017-01-01",
+                    "id": 1,
+                    "tasks": [
+                        {
+                            "id": 1,
+                            "name": "Task 1",
+                            "subject": "Subject 1",
+                            "image_url": "http://www.google.com",
+                            "status": "completed"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Task 2",
+                            "subject": "Subject 2",
+                            "image_url": "http://www.google.com",
+                            "status": "completed"
+                        }
+                    ]
+                }
+            ],
+            "d-days": [
+                {
+                    "date": "2017-01-01",
+                    "name": "D-Day 1"
+                }
+            ]
+        }
+    }
+}
