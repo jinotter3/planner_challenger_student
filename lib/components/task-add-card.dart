@@ -12,32 +12,64 @@ class TaskAddCard extends StatelessWidget {
   final TextEditingController _contentController = TextEditingController();
   final TextEditingController _numOfQuestionsController =
       TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  isNum(String num){
+  try{
+    int.parse(num);
+    return true;
+  }catch(e){
+    return false;
+  }
+}
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text("새 Task 추가"),
-      content: Column(
-        children: [
-          TextField(
-            controller: _subjectController,
-            decoration: const InputDecoration(
-              labelText: "과목",
+      content: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _subjectController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return '과목을 입력해주세요';
+                }
+                return null;
+              },
+              decoration: const InputDecoration(
+                labelText: "과목",
+              ),
             ),
-          ),
-          TextField(
-            controller: _contentController,
-            decoration: const InputDecoration(
-              labelText: "내용",
+            TextFormField(
+              controller: _contentController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return '내용을 입력해주세요';
+                }
+                return null;
+              },
+              decoration: const InputDecoration(
+                labelText: "내용",
+              ),
             ),
-          ),
-          TextField(
-            controller: _numOfQuestionsController,
-            decoration: const InputDecoration(
-              labelText: "문항 수",
+            TextFormField(
+              controller: _numOfQuestionsController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return '문항 수를 입력해주세요';
+                } else if (isNum(value) == false) {
+                  return '문항 수는 숫자로 입력해주세요';
+                }
+                return null;
+              },
+              decoration: const InputDecoration(
+                labelText: "문항 수",
+              ),
+              keyboardType: TextInputType.number,
             ),
-            keyboardType: TextInputType.number,
-          ),
-        ],
+          ],
+        ),
       ),
       actions: [
         TextButton(
@@ -51,11 +83,7 @@ class TaskAddCard extends StatelessWidget {
             // upload to firebase
             // students/uid/days/date/tasks
             // subject, content, numOfQuestions
-            if (_subjectController.text.isEmpty ||
-                _contentController.text.isEmpty ||
-                _numOfQuestionsController.text.isEmpty) {
-              return;
-            }
+            if (!_formKey.currentState!.validate()) return;
             final DatabaseReference _dbRef = FirebaseDatabase.instance
                 .ref("students/${FirebaseAuth.instance.currentUser!.uid}/days");
             final DatabaseReference _taskRef =

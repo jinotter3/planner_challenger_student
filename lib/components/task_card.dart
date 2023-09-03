@@ -40,15 +40,56 @@ class _TaskCardState extends State<TaskCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Column(
+              Row(
                 children: [
-                  Text(
-                    widget.task.title,
-                    style: TextStyle(fontSize: 20),
+                  widget.task.done
+                      ? IconButton(
+                          icon: Icon(Icons.check_circle),
+                          onPressed: () async {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title:
+                                    Text("눌러서 이미지 다운로드 - 다운로드 후 .png 확장자로 저장"),
+                                content: InkWell(
+                                  child: Text(
+                                    "${widget.task.imageUrl}",
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                  onTap: () async {
+                                    Uri _url = Uri.parse(widget.task.imageUrl);
+                                    if (await launchUrl(_url)) {
+                                      // await launchUrl(_url);
+                                    } else {
+                                      throw 'Could not launch $_url';
+                                    }
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : Icon(
+                          Icons.check_circle_outline,
+                        ),
+                  SizedBox(
+                    width: 10,
                   ),
-                  Text(
-                    widget.task.numberOfQuestions.toString(),
-                    style: TextStyle(fontSize: 16),
+                  Column(
+                    children: [
+                      Text(
+                        widget.task.title,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        widget.task.numberOfQuestions.toString(),
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -81,7 +122,7 @@ class _TaskCardState extends State<TaskCard> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: Icon(Icons.delete_outline_outlined),
                     onPressed: () {
                       if (widget.currentDate.difference(DateTime.now()).inDays <
                           0) {
@@ -123,6 +164,13 @@ class _TaskCardState extends State<TaskCard> {
                     onPressed: () async {
                       if (widget.currentDate.difference(DateTime.now()).inDays <
                           0) {
+                            showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text("에러"),
+                            content: Text("기한이 지난 과제는 완료할 수 없습니다."),
+                          ),
+                        );
                         return;
                       }
                       final ImagePicker picker = ImagePicker();
@@ -138,40 +186,6 @@ class _TaskCardState extends State<TaskCard> {
                       widget.uploadImage(imageData);
                     },
                   ),
-                  widget.task.done
-                      ? IconButton(
-                          icon: Icon(Icons.check_circle),
-                          onPressed: () async {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title:
-                                    Text("눌러서 이미지 다운로드 - 다운로드 후 .png 확장자로 저장"),
-                                content: InkWell(
-                                  child: Text(
-                                    "${widget.task.imageUrl}",
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.blue,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                  onTap: () async {
-                                    Uri _url = Uri.parse(widget.task.imageUrl);
-                                    if (await launchUrl(_url)) {
-                                      // await launchUrl(_url);
-                                    } else {
-                                      throw 'Could not launch $_url';
-                                    }
-                                  },
-                                ),
-                              ),
-                            );
-                          },
-                        )
-                      : Icon(
-                          Icons.check_circle_outline,
-                        ),
                 ],
               ),
             ],

@@ -14,11 +14,11 @@ class StudentCard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              'Student Name: ${student.name}',
+              '이름: ${student.name}',
               style: TextStyle(fontSize: 20),
             ),
             Text(
-              'Student ID: ${student.studentId}',
+              '학번: ${student.studentId}',
               style: TextStyle(fontSize: 16),
             ),
           ],

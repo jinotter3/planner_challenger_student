@@ -41,123 +41,146 @@ final class MainScreen extends ConsumerWidget {
         ref.watch(dailyTaskListProvider(dateTimeNotifier.selectedDate));
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text("30일 챌린지",
+            style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white)),
+        backgroundColor: Colors.blue,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            color: Colors.white,
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+            },
+          )
+        ],
+      ),
       body: Row(
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              studentAsyncValue.when(
-                data: (student) => StudentCard(
-                  student: student as Student,
-                ),
-                loading: () => CircularProgressIndicator(),
-                error: (error, stack) => Text("Error loading data"),
-              ),
-              // DatePicker
-              ElevatedButton(
-                onPressed: () {
-                  showDatePicker(
-                    context: context,
-                    initialDate: dateTimeNotifier.selectedDate,
-                    firstDate: DateTime.now().subtract(Duration(days: 365)),
-                    lastDate: DateTime.now().add(Duration(days: 365)),
-                  ).then((value) {
-                    if (value != null) {
-                      dateTimeNotifier.selectedDate = value;
-                      print(dateTimeNotifier.selectedDate);
-                    }
-                  });
-                },
-                child: const Text("날짜 선택"),
-              ),
-            ],
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  DateCard(
-                    date: dateTimeNotifier.selectedDate,
+          Expanded(
+            flex: 5,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: SingleChildScrollView(
+                    child: taskListProvider.when(
+                      data: (dailyTaskList) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: dailyTaskList.getTasksBySubject().keys.map(
+                            (e) {
+                              return Column(
+                                children: [
+                                  Text(
+                                    e,
+                                    style: TextStyle(fontSize: 24),
+                                  ),
+                                  ...dailyTaskList
+                                      .getTasksBySubject()[e]!
+                                      .map((e) => TaskCard(
+                                            task: e,
+                                            currentDate:
+                                                dateTimeNotifier.selectedDate,
+                                            deleteTask: () {
+                                              deleteTask(e.id,
+                                                  dateTimeNotifier.selectedDate);
+                                              print(
+                                                  dateTimeNotifier.selectedDate);
+                                              //refresh page with gorouters
+                                              GoRouter.of(context).refresh();
+                                              print("refreshed");
+                                              print(dateTimeNotifier.selectedDate
+                                                  .toString());
+                                            },
+                                            updateTask: (newTask) {
+                                              updateTask(e.id, newTask,
+                                                  dateTimeNotifier.selectedDate);
+                                              GoRouter.of(context).refresh();
+                                            },
+                                            uploadImage: (image) {
+                                              uploadImage(e.id, image,
+                                                  dateTimeNotifier.selectedDate);
+                                              GoRouter.of(context).refresh();
+                                            },
+                                          ))
+                                      .toList(),
+                                ],
+                              );
+                            },
+                          ).toList(),
+                        );
+                      },
+                      loading: () => CircularProgressIndicator(),
+                      error: (error, stack) {
+                        print(stack);
+                        return Text("Error loading data");
+                      },
+                    ),
                   ),
-                ],
-              ),
-              SingleChildScrollView(
-                child: taskListProvider.when(
-                  data: (dailyTaskList) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: dailyTaskList.getTasksBySubject().keys.map(
-                        (e) {
-                          return Column(
-                            children: [
-                              Text(
-                                e,
-                                style: TextStyle(fontSize: 24),
-                              ),
-                              ...dailyTaskList
-                                  .getTasksBySubject()[e]!
-                                  .map((e) => TaskCard(
-                                        task: e,
-                                        currentDate:
-                                            dateTimeNotifier.selectedDate,
-                                        deleteTask: () {
-                                          deleteTask(e.id,
-                                              dateTimeNotifier.selectedDate);
-                                          print(dateTimeNotifier.selectedDate);
-                                          GoRouter.of(context).refresh();
-                                          print("refreshed");
-                                          print(dateTimeNotifier.selectedDate
-                                              .toString());
-                                        },
-                                        updateTask: (newTask) {
-                                          updateTask(e.id, newTask,
-                                              dateTimeNotifier.selectedDate);
-                                          GoRouter.of(context).refresh();
-                                        },
-                                        uploadImage: (image) {
-                                          uploadImage(e.id, image,
-                                              dateTimeNotifier.selectedDate);
-                                          GoRouter.of(context).refresh();
-                                        },
-                                      ))
-                                  .toList(),
-                            ],
-                          );
-                        },
-                      ).toList(),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return TaskAddCard(
+                          date: dateTimeNotifier.selectedDate,
+                        );
+                      },
                     );
                   },
-                  loading: () => CircularProgressIndicator(),
-                  error: (error, stack) {
-                    print(stack);
-                    return Text("Error loading data");
-                  },
+                  child: const Text("새 Task 추가"),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return TaskAddCard(
-                        date: dateTimeNotifier.selectedDate,
-                      );
-                    },
-                  );
-                },
-                child: const Text("새 Task 추가"),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                },
-                child: const Text("Logout"),
-              ),
-            ],
+              ],
+            ),
+          ),
+          VerticalDivider(
+            color: Colors.grey,
+            thickness: 1,
+            width: 1,),
+          Expanded(
+            flex: 2,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 40,),
+                DateCard(
+                  date: dateTimeNotifier.selectedDate,
+                ),
+                studentAsyncValue.when(
+                  data: (student) => StudentCard(
+                    student: student as Student,
+                  ),
+                  loading: () => CircularProgressIndicator(),
+                  error: (error, stack) => Text("Error loading data"),
+                ),
+                // DatePicker
+                ElevatedButton(
+                  onPressed: () {
+                    showDatePicker(
+                      context: context,
+                      initialDate: dateTimeNotifier.selectedDate,
+                      firstDate: DateTime.now().subtract(Duration(days: 365)),
+                      lastDate: DateTime.now().add(Duration(days: 365)),
+                    ).then((value) {
+                      if (value != null) {
+                        dateTimeNotifier.selectedDate = value;
+                        print(dateTimeNotifier.selectedDate);
+                      }
+                    });
+                  },
+                  child: const Text("날짜 선택"),
+                ),
+              ],
+            ),
           ),
         ],
       ),
