@@ -25,50 +25,53 @@ class TaskAddCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text("새 Task 추가"),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _subjectController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '과목을 입력해주세요';
-                }
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: "과목",
+      content: SizedBox(
+        height: 200,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _subjectController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '과목을 입력해주세요';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  labelText: "과목",
+                ),
               ),
-            ),
-            TextFormField(
-              controller: _contentController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '내용을 입력해주세요';
-                }
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: "내용",
+              TextFormField(
+                controller: _contentController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '내용을 입력해주세요';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  labelText: "내용",
+                ),
               ),
-            ),
-            TextFormField(
-              controller: _numOfQuestionsController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '문항 수를 입력해주세요';
-                } else if (isNum(value) == false) {
-                  return '문항 수는 숫자로 입력해주세요';
-                }
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: "문항 수",
+              TextFormField(
+                controller: _numOfQuestionsController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '문항 수를 입력해주세요';
+                  } else if (isNum(value) == false) {
+                    return '문항 수는 숫자로 입력해주세요';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  labelText: "문항 수",
+                ),
+                keyboardType: TextInputType.number,
               ),
-              keyboardType: TextInputType.number,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       actions: [

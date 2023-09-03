@@ -1,11 +1,8 @@
-import 'dart:io';
 import 'dart:typed_data';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../models/task.dart';
-import '../utils/image_loader.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'task-update-card.dart';
 

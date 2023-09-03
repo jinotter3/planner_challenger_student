@@ -7,10 +7,8 @@ import 'package:planner_challenger_student/screens/login_screen.dart';
 import 'package:planner_challenger_student/screens/signup_screen.dart';
 import 'package:planner_challenger_student/screens/splash_screen.dart';
 
-import 'package:firebase_database/firebase_database.dart';
 
 import 'auth.dart';
-import 'models/student.dart';
 import 'screens/main_screen.dart';
 
 final _key = GlobalKey<NavigatorState>();

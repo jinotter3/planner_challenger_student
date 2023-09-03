@@ -1,5 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import '../models/task.dart';
@@ -27,52 +25,55 @@ isNum(String num){
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text("Task 수정"),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _subjectController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '과목을 입력해주세요';
-                }
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: "과목",
+      content: SizedBox(
+        height: 200,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _subjectController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '과목을 입력해주세요';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  labelText: "과목",
+                ),
               ),
-            ),
-            TextFormField(
-              controller: _contentController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '내용을 입력해주세요';
-                }
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: "내용",
+              TextFormField(
+                controller: _contentController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '내용을 입력해주세요';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  labelText: "내용",
+                ),
               ),
-            ),
-            TextFormField(
-              controller: _numOfQuestionsController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '문항 수를 입력해주세요';
+              TextFormField(
+                controller: _numOfQuestionsController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '문항 수를 입력해주세요';
+                  }
+                  //is value is int
+                else if(isNum(value) == false){
+                  return '문항 수는 숫자로 입력해주세요';
                 }
-                //is value is int
-              else if(isNum(value) == false){
-                return '문항 수는 숫자로 입력해주세요';
-              }
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: "문항 수",
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  labelText: "문항 수",
+                ),
+                keyboardType: TextInputType.number,
               ),
-              keyboardType: TextInputType.number,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       actions: [

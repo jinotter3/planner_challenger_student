@@ -1,13 +1,10 @@
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:go_router/go_router.dart';
 import 'package:planner_challenger_student/screens/main_screen.dart';
 import '../auth.dart';
 import '../auth_service.dart';
-import '../models/student.dart';
 import 'signup_screen.dart';
 
 class LoginScreen extends ConsumerWidget {
@@ -45,6 +42,71 @@ class _LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  login(context) async {
+    if (!_formKey.currentState!.validate()) return;
+    try {
+      await authService.signInWithEmail(
+          email: emailController.text, password: passwordController.text);
+    } catch (error) {
+      if (error.toString().startsWith('[firebase_auth/wrong-password]')) {
+        // ignore: use_build_context_synchronously
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("로그인 실패"),
+              content: Text("비밀번호 오류"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("확인")),
+              ],
+            );
+          },
+        );
+      } else if (error
+          .toString()
+          .startsWith('[firebase_auth/user-not-found]')) {
+        // ignore: use_build_context_synchronously
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("로그인 실패"),
+              content: Text("존재하지 않는 이메일입니다"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("확인")),
+              ],
+            );
+          },
+        );
+      } else {
+        // ignore: use_build_context_synchronously
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("로그인 실패"),
+              content: Text("알 수 없는 오류"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("확인")),
+              ],
+            );
+          },
+        );
+      }
+    }
+  }
 
   _LoginScreen({required this.authService});
 
@@ -78,6 +140,9 @@ class _LoginScreen extends StatelessWidget {
                           return null;
                         },
                         decoration: const InputDecoration(labelText: 'Email'),
+                        onFieldSubmitted: (value) async {
+                          login(context);
+                        },
                       ),
                       TextFormField(
                         controller: passwordController,
@@ -92,78 +157,16 @@ class _LoginScreen extends StatelessWidget {
                         },
                         decoration:
                             const InputDecoration(labelText: 'Password'),
+                        onFieldSubmitted: (value) async {
+                          login(context);
+                        },
                       ),
                       SizedBox(
                         height: 16,
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          if (!_formKey.currentState!.validate()) return;
-                          try {
-                            await authService.signInWithEmail(
-                                email: emailController.text,
-                                password: passwordController.text);
-                          } catch (error) {
-                            if (error
-                                .toString()
-                                .startsWith('[firebase_auth/wrong-password]')) {
-                              // ignore: use_build_context_synchronously
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text("로그인 실패"),
-                                    content: Text("비밀번호 오류"),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text("확인")),
-                                    ],
-                                  );
-                                },
-                              );
-                            } else if (error
-                                .toString()
-                                .startsWith('[firebase_auth/user-not-found]')) {
-                              // ignore: use_build_context_synchronously
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text("로그인 실패"),
-                                    content: Text("존재하지 않는 이메일입니다"),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text("확인")),
-                                    ],
-                                  );
-                                },
-                              );
-                            } else {
-                              // ignore: use_build_context_synchronously
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text("로그인 실패"),
-                                    content: Text("알 수 없는 오류"),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text("확인")),
-                                    ],
-                                  );
-                                },
-                              );
-                            }
-                          }
+                          login(context);
                         },
                         child: const Text("Login"),
                       ),

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,9 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:planner_challenger_student/components/task-add-card.dart';
-import 'package:planner_challenger_student/models/daily_task_list.dart';
 
-import '../auth.dart';
 import '../components/date-card.dart';
 import '../components/student-card.dart';
 import '../components/task_card.dart';
@@ -89,24 +86,33 @@ final class MainScreen extends ConsumerWidget {
                                             currentDate:
                                                 dateTimeNotifier.selectedDate,
                                             deleteTask: () {
-                                              deleteTask(e.id,
-                                                  dateTimeNotifier.selectedDate);
-                                              print(
-                                                  dateTimeNotifier.selectedDate);
+                                              deleteTask(
+                                                  e.id,
+                                                  dateTimeNotifier
+                                                      .selectedDate);
+                                              print(dateTimeNotifier
+                                                  .selectedDate);
                                               //refresh page with gorouters
                                               GoRouter.of(context).refresh();
                                               print("refreshed");
-                                              print(dateTimeNotifier.selectedDate
+                                              print(dateTimeNotifier
+                                                  .selectedDate
                                                   .toString());
                                             },
                                             updateTask: (newTask) {
-                                              updateTask(e.id, newTask,
-                                                  dateTimeNotifier.selectedDate);
+                                              updateTask(
+                                                  e.id,
+                                                  newTask,
+                                                  dateTimeNotifier
+                                                      .selectedDate);
                                               GoRouter.of(context).refresh();
                                             },
                                             uploadImage: (image) {
-                                              uploadImage(e.id, image,
-                                                  dateTimeNotifier.selectedDate);
+                                              uploadImage(
+                                                  e.id,
+                                                  image,
+                                                  dateTimeNotifier
+                                                      .selectedDate);
                                               GoRouter.of(context).refresh();
                                             },
                                           ))
@@ -127,6 +133,19 @@ final class MainScreen extends ConsumerWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    if (dateTimeNotifier.selectedDate
+                            .difference(DateTime.now())
+                            .inDays <
+                        0) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: Text("에러"),
+                          content: Text("기한이 지난 과제는 삭제할 수 없습니다."),
+                        ),
+                      );
+                      return;
+                    }
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -136,7 +155,7 @@ final class MainScreen extends ConsumerWidget {
                       },
                     );
                   },
-                  child: const Text("새 Task 추가"),
+                  child: const Text("새 목표 추가", style: TextStyle(fontSize: 15, color: Colors.black)),
                 ),
               ],
             ),
@@ -144,40 +163,51 @@ final class MainScreen extends ConsumerWidget {
           VerticalDivider(
             color: Colors.grey,
             thickness: 1,
-            width: 1,),
+            width: 1,
+          ),
           Expanded(
             flex: 2,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 40,),
-                DateCard(
-                  date: dateTimeNotifier.selectedDate,
+                SizedBox(
+                  height: 40,
                 ),
+                SizedBox(
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                    ),
+                    onPressed: () {
+                      showDatePicker(
+                        context: context,
+                        initialDate: dateTimeNotifier.selectedDate,
+                        firstDate: DateTime.now().subtract(Duration(days: 365)),
+                        lastDate: DateTime.now().add(Duration(days: 365)),
+                      ).then((value) {
+                        if (value != null) {
+                          dateTimeNotifier.selectedDate = value;
+                          print(dateTimeNotifier.selectedDate);
+                        }
+                      });
+                    },
+                    child: DateCard(
+                      date: dateTimeNotifier.selectedDate,
+                    ),
+                  ),
+                ),
+
                 studentAsyncValue.when(
                   data: (student) => StudentCard(
                     student: student as Student,
                   ),
                   loading: () => CircularProgressIndicator(),
                   error: (error, stack) => Text("Error loading data"),
-                ),
-                // DatePicker
-                ElevatedButton(
-                  onPressed: () {
-                    showDatePicker(
-                      context: context,
-                      initialDate: dateTimeNotifier.selectedDate,
-                      firstDate: DateTime.now().subtract(Duration(days: 365)),
-                      lastDate: DateTime.now().add(Duration(days: 365)),
-                    ).then((value) {
-                      if (value != null) {
-                        dateTimeNotifier.selectedDate = value;
-                        print(dateTimeNotifier.selectedDate);
-                      }
-                    });
-                  },
-                  child: const Text("날짜 선택"),
                 ),
               ],
             ),
