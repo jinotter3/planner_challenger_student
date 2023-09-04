@@ -21,11 +21,11 @@ class DateCard extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
               Text(
-                date.difference(today).inDays == 0
+                (date.difference(today).inHours / 24).round() == 0
                     ? 'Today'
-                    : date.difference(today).inDays == 1
+                    : (date.difference(today).inHours / 24).round() == 1
                         ? 'Tomorrow'
-                        : date.difference(today).inDays == -1
+                        : (date.difference(today).inHours / 24).round() == -1
                             ? 'Yesterday'
                             : '',
                 style: Theme.of(context).textTheme.headlineMedium,
@@ -47,11 +47,11 @@ class DateCard extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               Text(
-                date.difference(today).inDays == 0
+                (date.difference(today).inHours / 24).round() == 0
                     ? 'Today'
-                    : date.difference(today).inDays == 1
+                    : (date.difference(today).inHours / 24).round() == 1
                         ? 'Tomorrow'
-                        : date.difference(today).inDays == -1
+                        : (date.difference(today).inHours / 24).round() == -1
                             ? 'Yesterday'
                             : '',
                 style: Theme.of(context).textTheme.headlineSmall,

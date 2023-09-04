@@ -99,10 +99,10 @@ class _TaskCardState extends State<TaskCard> {
                     IconButton(
                       icon: Icon(Icons.edit),
                       onPressed: () {
-                        if (widget.currentDate
+                        if ((widget.currentDate
                                 .difference(DateTime.now())
-                                .inDays <
-                            0) {
+                                .inHours / 24).round() <
+                            -1) {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
@@ -127,10 +127,10 @@ class _TaskCardState extends State<TaskCard> {
                     IconButton(
                       icon: Icon(Icons.delete_outline_outlined),
                       onPressed: () {
-                        if (widget.currentDate
+                        if ((widget.currentDate
                                 .difference(DateTime.now())
-                                .inDays <
-                            0) {
+                                .inHours / 24).round() <
+                            -1) {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
@@ -167,10 +167,10 @@ class _TaskCardState extends State<TaskCard> {
                     IconButton(
                       icon: Icon(Icons.upload_file),
                       onPressed: () async {
-                        if (widget.currentDate
+                        if ((widget.currentDate
                                 .difference(DateTime.now())
-                                .inDays <
-                            0) {
+                                .inHours / 24).round() <
+                            -1) {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
@@ -271,10 +271,10 @@ class _TaskCardState extends State<TaskCard> {
                     IconButton(
                       icon: Icon(Icons.edit),
                       onPressed: () {
-                        if (widget.currentDate
+                        if ((widget.currentDate
                                 .difference(DateTime.now())
-                                .inDays <
-                            0) {
+                                .inHours / 24).round() <
+                            -1) {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
@@ -299,10 +299,10 @@ class _TaskCardState extends State<TaskCard> {
                     IconButton(
                       icon: Icon(Icons.delete_outline_outlined),
                       onPressed: () {
-                        if (widget.currentDate
+                        if ((widget.currentDate
                                 .difference(DateTime.now())
-                                .inDays <
-                            0) {
+                                .inHours / 24).round() <
+                            -1) {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
@@ -339,10 +339,10 @@ class _TaskCardState extends State<TaskCard> {
                     IconButton(
                       icon: Icon(Icons.upload_file),
                       onPressed: () async {
-                        if (widget.currentDate
+                        if ((widget.currentDate
                                 .difference(DateTime.now())
-                                .inDays <
-                            0) {
+                                .inHours / 24).round() <
+                            -1) {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
@@ -381,28 +381,28 @@ class _TaskCardState extends State<TaskCard> {
 //       trailing: Row(
 //         children: [
 //           IconButton(
-//             icon: Icon(Icons.edit),
+//             icon(: Icon(Icons.edit),
 //             onPressed: () {
-//               if (widget.currentDate.difference(DateTime.now()).inDays < 0) {
-//                 return;
+//               if (widget.cuHinHours / 24).round()tDate.difference(DateTime.now()).inDays < 0) {
+//                 ret-1rn;
 //               }
 //               widget.updateTask(widget.task);
 //             },
 //           ),
 //           IconButton(
-//             icon: Icon(Icons.delete),
+//             icon(: Icon(Icons.delete),
 //             onPressed: () {
-//               if (widget.currentDate.difference(DateTime.now()).inDays < 0) {
-//                 return;
+//               if (widget.cuHinHours / 24).round()tDate.difference(DateTime.now()).inDays < 0) {
+//                 ret-1rn;
 //               }
 //               widget.deleteTask(widget.task);
 //             },
 //           ),
 //           IconButton(
-//             icon: Icon(Icons.upload_file),
+//             icon(: Icon(Icons.upload_file),
 //             onPressed: () {
-//               if (widget.currentDate.difference(DateTime.now()).inDays < 0) {
-//                 return;
+//               if (widget.cuHinHours / 24).round()tDate.difference(DateTime.now()).inDays < 0) {
+//                 ret-1rn;
 //               }
 //               widget.uploadImage(widget.task);
 //             },

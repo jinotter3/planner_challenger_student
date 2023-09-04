@@ -9,7 +9,7 @@ import 'signup_screen.dart';
 
 class LoginScreen extends ConsumerWidget {
   final AuthService _authService = AuthService();
-  static String get routeName => 'login';
+  static String get routeName => 'main';
   static String get routeLocation => '/$routeName';
 
   @override

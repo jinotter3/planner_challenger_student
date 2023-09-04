@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:planner_challenger_student/components/task-add-card.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../components/date-card.dart';
 import '../components/student-card.dart';
@@ -24,8 +25,8 @@ final class MainScreen extends ConsumerWidget {
   }) : super(key: key);
 
   final User user;
-  static String get routeName => 'main';
-  static String get routeLocation => '/$routeName';
+  // static String get routeName => 'main';
+  // static String get routeLocation => '/$routeName';
   // DateTime dateShown;
   final DateTime today;
 
@@ -82,42 +83,33 @@ final class MainScreen extends ConsumerWidget {
                                     ),
                                     ...dailyTaskList
                                         .getTasksBySubject()[e]!
-                                        .map((e) => TaskCard(
-                                              task: e,
-                                              currentDate:
-                                                  dateTimeNotifier.selectedDate,
-                                              deleteTask: () {
-                                                deleteTask(
-                                                    e.id,
-                                                    dateTimeNotifier
-                                                        .selectedDate);
-                                                print(dateTimeNotifier
-                                                    .selectedDate);
-                                                //refresh page with gorouters
-                                                GoRouter.of(context).refresh();
-                                                print("refreshed");
-                                                print(dateTimeNotifier
-                                                    .selectedDate
-                                                    .toString());
-                                              },
-                                              updateTask: (newTask) {
-                                                updateTask(
-                                                    e.id,
-                                                    newTask,
-                                                    dateTimeNotifier
-                                                        .selectedDate);
-                                                GoRouter.of(context).refresh();
-                                              },
-                                              uploadImage: (image) {
-                                                uploadImage(
-                                                    e.id,
-                                                    image,
-                                                    dateTimeNotifier
-                                                        .selectedDate);
-                                                GoRouter.of(context).refresh();
-                                              },
-                                            ))
-                                        .toList(),
+                                        .map((e) {
+                                      return TaskCard(
+                                        task: e,
+                                        currentDate:
+                                            dateTimeNotifier.selectedDate,
+                                        deleteTask: () {
+                                          deleteTask(e.id,
+                                              dateTimeNotifier.selectedDate);
+                                          print(dateTimeNotifier.selectedDate);
+                                          //refresh page with gorouters
+                                          GoRouter.of(context).refresh();
+                                          print("refreshed");
+                                          print(dateTimeNotifier.selectedDate
+                                              .toString());
+                                        },
+                                        updateTask: (newTask) {
+                                          updateTask(e.id, newTask,
+                                              dateTimeNotifier.selectedDate);
+                                          GoRouter.of(context).refresh();
+                                        },
+                                        uploadImage: (image) {
+                                          uploadImage(e.id, image,
+                                              dateTimeNotifier.selectedDate);
+                                          GoRouter.of(context).refresh();
+                                        },
+                                      );
+                                    }).toList(),
                                   ],
                                 );
                               },
@@ -134,15 +126,17 @@ final class MainScreen extends ConsumerWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      if (dateTimeNotifier.selectedDate
-                              .difference(DateTime.now())
-                              .inDays <
-                          0) {
+                      if ((dateTimeNotifier.selectedDate
+                                      .difference(DateTime.now())
+                                      .inHours /
+                                  24)
+                              .round() <
+                          -1) {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
                             title: Text("에러"),
-                            content: Text("기한이 지난 과제는 삭제할 수 없습니다."),
+                            content: Text("목표를 추가할 수 없는 기간입니다."),
                           ),
                         );
                         return;
@@ -176,34 +170,8 @@ final class MainScreen extends ConsumerWidget {
                   SizedBox(
                     height: 40,
                   ),
-                  SizedBox(
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
-                      ),
-                      onPressed: () {
-                        showDatePicker(
-                          context: context,
-                          initialDate: dateTimeNotifier.selectedDate,
-                          firstDate:
-                              DateTime.now().subtract(Duration(days: 365)),
-                          lastDate: DateTime.now().add(Duration(days: 365)),
-                        ).then((value) {
-                          if (value != null) {
-                            dateTimeNotifier.selectedDate = value;
-                            print(dateTimeNotifier.selectedDate);
-                          }
-                        });
-                      },
-                      child: DateCard(
-                        date: dateTimeNotifier.selectedDate,
-                      ),
-                    ),
+                  DateCard(
+                    date: dateTimeNotifier.selectedDate,
                   ),
                   studentAsyncValue.when(
                     data: (student) => StudentCard(
@@ -211,6 +179,24 @@ final class MainScreen extends ConsumerWidget {
                     ),
                     loading: () => CircularProgressIndicator(),
                     error: (error, stack) => Text("Error loading data"),
+                  ),
+                  TableCalendar(
+                    focusedDay: dateTimeNotifier.selectedDate,
+                    firstDay: DateTime.now().subtract(Duration(days: 365)),
+                    lastDay: DateTime.now().add(Duration(days: 365)),
+                    calendarFormat: CalendarFormat.month,
+                    // delete the button
+                    headerStyle: HeaderStyle(
+                      titleCentered: true,
+                      formatButtonVisible: false,
+                    ),
+                    selectedDayPredicate: (day) {
+                      return isSameDay(dateTimeNotifier.selectedDate, day);
+                    },
+                    onDaySelected: (selectedDay, focusedDay) {
+                      dateTimeNotifier.selectedDate = selectedDay;
+                      print(dateTimeNotifier.selectedDate);
+                    },
                   ),
                 ],
               ),
@@ -305,15 +291,17 @@ final class MainScreen extends ConsumerWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  if (dateTimeNotifier.selectedDate
-                          .difference(DateTime.now())
-                          .inDays <
-                      0) {
+                  if ((dateTimeNotifier.selectedDate
+                                  .difference(DateTime.now())
+                                  .inHours /
+                              24)
+                          .round() <
+                      -1) {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
                         title: Text("에러"),
-                        content: Text("기한이 지난 과제는 삭제할 수 없습니다."),
+                        content: Text("목표를 추가할 수 없는 기간입니다."),
                       ),
                     );
                     return;
@@ -341,32 +329,8 @@ final class MainScreen extends ConsumerWidget {
               SizedBox(
                 height: 40,
               ),
-              SizedBox(
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                    ),
-                  ),
-                  onPressed: () {
-                    showDatePicker(
-                      context: context,
-                      initialDate: dateTimeNotifier.selectedDate,
-                      firstDate: DateTime.now().subtract(Duration(days: 365)),
-                      lastDate: DateTime.now().add(Duration(days: 365)),
-                    ).then((value) {
-                      if (value != null) {
-                        dateTimeNotifier.selectedDate = value;
-                        print(dateTimeNotifier.selectedDate);
-                      }
-                    });
-                  },
-                  child: DateCard(
-                    date: dateTimeNotifier.selectedDate,
-                  ),
-                ),
+              DateCard(
+                date: dateTimeNotifier.selectedDate,
               ),
               studentAsyncValue.when(
                 data: (student) => StudentCard(
@@ -374,6 +338,24 @@ final class MainScreen extends ConsumerWidget {
                 ),
                 loading: () => CircularProgressIndicator(),
                 error: (error, stack) => Text("Error loading data"),
+              ),
+              TableCalendar(
+                focusedDay: dateTimeNotifier.selectedDate,
+                firstDay: DateTime.now().subtract(Duration(days: 365)),
+                lastDay: DateTime.now().add(Duration(days: 365)),
+                calendarFormat: CalendarFormat.month,
+                // delete the button
+                headerStyle: HeaderStyle(
+                  titleCentered: true,
+                  formatButtonVisible: false,
+                ),
+                selectedDayPredicate: (day) {
+                  return isSameDay(dateTimeNotifier.selectedDate, day);
+                },
+                onDaySelected: (selectedDay, focusedDay) {
+                  dateTimeNotifier.selectedDate = selectedDay;
+                  print(dateTimeNotifier.selectedDate);
+                },
               ),
             ],
           ),

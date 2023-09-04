@@ -47,14 +47,14 @@ final routerProvider = Provider<GoRouter>(
           name: SplashScreen.routeName,
           builder: (context, state) => const SplashScreen(),
         ),
-        GoRoute(
-          path: MainScreen.routeLocation,
-          name: MainScreen.routeName,
-          builder: (context, state) {
-            final user = state.extra as User?;
-            return MainScreen(user: user!, today: DateTime.now(),);
-          }
-        ),
+        // GoRoute(
+        //   path: MainScreen.routeLocation,
+        //   name: MainScreen.routeName,
+        //   builder: (context, state) {
+        //     final user = state.extra as User?;
+        //     return MainScreen(user: user!, today: DateTime.now(),);
+        //   }
+        // ),
         GoRoute(
           path: SignUpScreen.routeLocation,
           name: SignUpScreen.routeName,
