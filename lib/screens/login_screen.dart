@@ -22,11 +22,8 @@ class LoginScreen extends ConsumerWidget {
           if (user == null) {
             return _LoginScreen(authService: _authService);
           } else {
-            return MainScreen(
-              user: user,
-              // dateShown: DateTime.now(),
-              today: DateTime.now(),
-            );
+            // GoRouter.of(context).go(MainScreen.routeLocation, extra: user);
+            return MainScreen(user: user, today: DateTime.now());
           }
         },
         loading: () => CircularProgressIndicator(),

@@ -28,168 +28,351 @@ class TaskCard extends StatefulWidget {
 class _TaskCardState extends State<TaskCard> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.5,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  widget.task.done
-                      ? IconButton(
-                          icon: Icon(Icons.check_circle),
-                          onPressed: () async {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title:
-                                    Text("눌러서 이미지 다운로드 - 다운로드 후 .png 확장자로 저장"),
-                                content: InkWell(
-                                  child: Text(
-                                    "${widget.task.imageUrl}",
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.blue,
-                                      decoration: TextDecoration.underline,
+    if (MediaQuery.of(context).size.width > 600) {
+      return Card(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.5,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    widget.task.done
+                        ? IconButton(
+                            icon: Icon(Icons.check_circle_outline),
+                            onPressed: () async {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: Text(
+                                      "눌러서 이미지 다운로드 - 다운로드 후 .png 확장자로 저장"),
+                                  content: InkWell(
+                                    child: Text(
+                                      "${widget.task.imageUrl}",
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline,
+                                      ),
                                     ),
+                                    onTap: () async {
+                                      Uri _url =
+                                          Uri.parse(widget.task.imageUrl);
+                                      if (await launchUrl(_url)) {
+                                        // await launchUrl(_url);
+                                      } else {
+                                        throw 'Could not launch $_url';
+                                      }
+                                    },
                                   ),
-                                  onTap: () async {
-                                    Uri _url = Uri.parse(widget.task.imageUrl);
-                                    if (await launchUrl(_url)) {
-                                      // await launchUrl(_url);
-                                    } else {
-                                      throw 'Could not launch $_url';
-                                    }
-                                  },
                                 ),
+                              );
+                            },
+                          )
+                        : Icon(
+                            Icons.cancel_outlined,
+                          ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.task.title,
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Text(
+                          widget.task.numberOfQuestions.toString(),
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () {
+                        if (widget.currentDate
+                                .difference(DateTime.now())
+                                .inDays <
+                            0) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text("에러"),
+                              content: Text("기한이 지난 과제는 수정할 수 없습니다."),
+                            ),
+                          );
+                          return;
+                        }
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return TaskUpdateCard(
+                                task: widget.task,
+                                updateTask: (newTask) {
+                                  widget.updateTask(newTask);
+                                },
+                              );
+                            });
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete_outline_outlined),
+                      onPressed: () {
+                        if (widget.currentDate
+                                .difference(DateTime.now())
+                                .inDays <
+                            0) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text("에러"),
+                              content: Text("기한이 지난 과제는 삭제할 수 없습니다."),
+                            ),
+                          );
+                          return;
+                        }
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text("경고"),
+                            content: Text("정말로 삭제하시겠습니까?"),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("취소"),
                               ),
-                            );
-                          },
-                        )
-                      : Icon(
-                          Icons.check_circle_outline,
-                        ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        widget.task.title,
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      Text(
-                        widget.task.numberOfQuestions.toString(),
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      if (widget.currentDate.difference(DateTime.now()).inDays <
-                          0) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: Text("에러"),
-                            content: Text("기한이 지난 과제는 수정할 수 없습니다."),
+                              TextButton(
+                                onPressed: () {
+                                  widget.deleteTask();
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("삭제"),
+                              ),
+                            ],
                           ),
                         );
-                        return;
-                      }
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return TaskUpdateCard(
-                              task: widget.task,
-                              updateTask: (newTask) {
-                                widget.updateTask(newTask);
-                              },
-                            );
-                          });
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete_outline_outlined),
-                    onPressed: () {
-                      if (widget.currentDate.difference(DateTime.now()).inDays <
-                          0) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: Text("에러"),
-                            content: Text("기한이 지난 과제는 삭제할 수 없습니다."),
-                          ),
-                        );
-                        return;
-                      }
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: Text("경고"),
-                          content: Text("정말로 삭제하시겠습니까?"),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text("취소"),
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.upload_file),
+                      onPressed: () async {
+                        if (widget.currentDate
+                                .difference(DateTime.now())
+                                .inDays <
+                            0) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text("에러"),
+                              content: Text("기한이 지난 과제는 완료할 수 없습니다."),
                             ),
-                            TextButton(
-                              onPressed: () {
-                                widget.deleteTask();
-                                Navigator.of(context).pop();
-                              },
-                              child: Text("삭제"),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.upload_file),
-                    onPressed: () async {
-                      if (widget.currentDate.difference(DateTime.now()).inDays <
-                          0) {
-                            showDialog(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: Text("에러"),
-                            content: Text("기한이 지난 과제는 완료할 수 없습니다."),
-                          ),
-                        );
-                        return;
-                      }
-                      final ImagePicker picker = ImagePicker();
+                          );
+                          return;
+                        }
+                        final ImagePicker picker = ImagePicker();
 // Pick an image.
-                      final XFile? image = await picker.pickImage(
-                          source: ImageSource.gallery,
-                          maxHeight: 2000,
-                          maxWidth: 2000,
-                          imageQuality: 50);
-                      String path = image!.path;
-                      Uint8List imageData = await XFile(path).readAsBytes();
+                        final XFile? image = await picker.pickImage(
+                            source: ImageSource.gallery,
+                            maxHeight: 2000,
+                            maxWidth: 2000,
+                            imageQuality: 50);
+                        String path = image!.path;
+                        Uint8List imageData = await XFile(path).readAsBytes();
 
-                      widget.uploadImage(imageData);
-                    },
-                  ),
-                ],
-              ),
-            ],
+                        widget.uploadImage(imageData);
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      return Card(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.9,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    widget.task.done
+                        ? IconButton(
+                            icon: Icon(Icons.check_circle_outline),
+                            onPressed: () async {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: Text(
+                                      "눌러서 이미지 다운로드 - 다운로드 후 .png 확장자로 저장"),
+                                  content: InkWell(
+                                    child: Text(
+                                      "${widget.task.imageUrl}",
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                    onTap: () async {
+                                      Uri _url =
+                                          Uri.parse(widget.task.imageUrl);
+                                      if (await launchUrl(_url)) {
+                                        // await launchUrl(_url);
+                                      } else {
+                                        throw 'Could not launch $_url';
+                                      }
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : Icon(
+                            Icons.cancel_outlined,
+                          ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.task.title,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          widget.task.numberOfQuestions.toString(),
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () {
+                        if (widget.currentDate
+                                .difference(DateTime.now())
+                                .inDays <
+                            0) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text("에러"),
+                              content: Text("기한이 지난 과제는 수정할 수 없습니다."),
+                            ),
+                          );
+                          return;
+                        }
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return TaskUpdateCard(
+                                task: widget.task,
+                                updateTask: (newTask) {
+                                  widget.updateTask(newTask);
+                                },
+                              );
+                            });
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete_outline_outlined),
+                      onPressed: () {
+                        if (widget.currentDate
+                                .difference(DateTime.now())
+                                .inDays <
+                            0) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text("에러"),
+                              content: Text("기한이 지난 과제는 삭제할 수 없습니다."),
+                            ),
+                          );
+                          return;
+                        }
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text("경고"),
+                            content: Text("정말로 삭제하시겠습니까?"),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("취소"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  widget.deleteTask();
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("삭제"),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.upload_file),
+                      onPressed: () async {
+                        if (widget.currentDate
+                                .difference(DateTime.now())
+                                .inDays <
+                            0) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text("에러"),
+                              content: Text("기한이 지난 과제는 완료할 수 없습니다."),
+                            ),
+                          );
+                          return;
+                        }
+                        final ImagePicker picker = ImagePicker();
+// Pick an image.
+                        final XFile? image = await picker.pickImage(
+                            source: ImageSource.gallery,
+                            maxHeight: 2000,
+                            maxWidth: 2000,
+                            imageQuality: 50);
+                        String path = image!.path;
+                        Uint8List imageData = await XFile(path).readAsBytes();
+
+                        widget.uploadImage(imageData);
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
 

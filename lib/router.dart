@@ -20,7 +20,7 @@ final routerProvider = Provider<GoRouter>(
       navigatorKey: _key,
       initialLocation: authState.when(
         data: (user) {
-          if (user != null) {
+          if (user == null) {
             return LoginScreen.routeLocation;
           } else {
             return LoginScreen.routeLocation;
@@ -50,11 +50,10 @@ final routerProvider = Provider<GoRouter>(
         GoRoute(
           path: MainScreen.routeLocation,
           name: MainScreen.routeName,
-          builder: (context, state) => MainScreen(
-            user: state.pathParameters['student'] as User,
-            // dateShown: DateTime.now(),
-            today: DateTime.now(),
-          ),
+          builder: (context, state) {
+            final user = state.extra as User?;
+            return MainScreen(user: user!, today: DateTime.now(),);
+          }
         ),
         GoRoute(
           path: SignUpScreen.routeLocation,

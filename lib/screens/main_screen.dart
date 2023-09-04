@@ -36,185 +36,350 @@ final class MainScreen extends ConsumerWidget {
     print(dateTimeNotifier.selectedDate);
     final taskListProvider =
         ref.watch(dailyTaskListProvider(dateTimeNotifier.selectedDate));
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("30일 챌린지",
-            style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white)),
-        backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            color: Colors.white,
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-            },
-          )
-        ],
-      ),
-      body: Row(
-        children: [
-          Expanded(
-            flex: 5,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.8,
-                  child: SingleChildScrollView(
-                    child: taskListProvider.when(
-                      data: (dailyTaskList) {
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: dailyTaskList.getTasksBySubject().keys.map(
-                            (e) {
-                              return Column(
-                                children: [
-                                  Text(
-                                    e,
-                                    style: TextStyle(fontSize: 24),
-                                  ),
-                                  ...dailyTaskList
-                                      .getTasksBySubject()[e]!
-                                      .map((e) => TaskCard(
-                                            task: e,
-                                            currentDate:
-                                                dateTimeNotifier.selectedDate,
-                                            deleteTask: () {
-                                              deleteTask(
-                                                  e.id,
-                                                  dateTimeNotifier
-                                                      .selectedDate);
-                                              print(dateTimeNotifier
-                                                  .selectedDate);
-                                              //refresh page with gorouters
-                                              GoRouter.of(context).refresh();
-                                              print("refreshed");
-                                              print(dateTimeNotifier
-                                                  .selectedDate
-                                                  .toString());
-                                            },
-                                            updateTask: (newTask) {
-                                              updateTask(
-                                                  e.id,
-                                                  newTask,
-                                                  dateTimeNotifier
-                                                      .selectedDate);
-                                              GoRouter.of(context).refresh();
-                                            },
-                                            uploadImage: (image) {
-                                              uploadImage(
-                                                  e.id,
-                                                  image,
-                                                  dateTimeNotifier
-                                                      .selectedDate);
-                                              GoRouter.of(context).refresh();
-                                            },
-                                          ))
-                                      .toList(),
-                                ],
-                              );
-                            },
-                          ).toList(),
-                        );
-                      },
-                      loading: () => CircularProgressIndicator(),
-                      error: (error, stack) {
-                        print(stack);
-                        return Text("Error loading data");
-                      },
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (dateTimeNotifier.selectedDate
-                            .difference(DateTime.now())
-                            .inDays <
-                        0) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: Text("에러"),
-                          content: Text("기한이 지난 과제는 삭제할 수 없습니다."),
-                        ),
-                      );
-                      return;
-                    }
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return TaskAddCard(
-                          date: dateTimeNotifier.selectedDate,
-                        );
-                      },
-                    );
-                  },
-                  child: const Text("새 목표 추가", style: TextStyle(fontSize: 15, color: Colors.black)),
-                ),
-              ],
-            ),
-          ),
-          VerticalDivider(
-            color: Colors.grey,
-            thickness: 1,
-            width: 1,
-          ),
-          Expanded(
-            flex: 2,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 40,
-                ),
-                SizedBox(
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
+    if (MediaQuery.of(context).size.width > 600) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("30일 챌린지",
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
+          backgroundColor: Colors.blue,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.logout),
+              color: Colors.white,
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+              },
+            )
+          ],
+        ),
+        body: Row(
+          children: [
+            Expanded(
+              flex: 5,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.8,
+                    child: SingleChildScrollView(
+                      child: taskListProvider.when(
+                        data: (dailyTaskList) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children:
+                                dailyTaskList.getTasksBySubject().keys.map(
+                              (e) {
+                                return Column(
+                                  children: [
+                                    Text(
+                                      e,
+                                      style: TextStyle(fontSize: 24),
+                                    ),
+                                    ...dailyTaskList
+                                        .getTasksBySubject()[e]!
+                                        .map((e) => TaskCard(
+                                              task: e,
+                                              currentDate:
+                                                  dateTimeNotifier.selectedDate,
+                                              deleteTask: () {
+                                                deleteTask(
+                                                    e.id,
+                                                    dateTimeNotifier
+                                                        .selectedDate);
+                                                print(dateTimeNotifier
+                                                    .selectedDate);
+                                                //refresh page with gorouters
+                                                GoRouter.of(context).refresh();
+                                                print("refreshed");
+                                                print(dateTimeNotifier
+                                                    .selectedDate
+                                                    .toString());
+                                              },
+                                              updateTask: (newTask) {
+                                                updateTask(
+                                                    e.id,
+                                                    newTask,
+                                                    dateTimeNotifier
+                                                        .selectedDate);
+                                                GoRouter.of(context).refresh();
+                                              },
+                                              uploadImage: (image) {
+                                                uploadImage(
+                                                    e.id,
+                                                    image,
+                                                    dateTimeNotifier
+                                                        .selectedDate);
+                                                GoRouter.of(context).refresh();
+                                              },
+                                            ))
+                                        .toList(),
+                                  ],
+                                );
+                              },
+                            ).toList(),
+                          );
+                        },
+                        loading: () => CircularProgressIndicator(),
+                        error: (error, stack) {
+                          print(stack);
+                          return Text("Error loading data");
+                        },
                       ),
                     ),
+                  ),
+                  ElevatedButton(
                     onPressed: () {
-                      showDatePicker(
+                      if (dateTimeNotifier.selectedDate
+                              .difference(DateTime.now())
+                              .inDays <
+                          0) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text("에러"),
+                            content: Text("기한이 지난 과제는 삭제할 수 없습니다."),
+                          ),
+                        );
+                        return;
+                      }
+                      showDialog(
                         context: context,
-                        initialDate: dateTimeNotifier.selectedDate,
-                        firstDate: DateTime.now().subtract(Duration(days: 365)),
-                        lastDate: DateTime.now().add(Duration(days: 365)),
-                      ).then((value) {
-                        if (value != null) {
-                          dateTimeNotifier.selectedDate = value;
-                          print(dateTimeNotifier.selectedDate);
-                        }
-                      });
+                        builder: (BuildContext context) {
+                          return TaskAddCard(
+                            date: dateTimeNotifier.selectedDate,
+                          );
+                        },
+                      );
                     },
-                    child: DateCard(
-                      date: dateTimeNotifier.selectedDate,
+                    child: const Text("새 목표 추가",
+                        style: TextStyle(fontSize: 15, color: Colors.black)),
+                  ),
+                ],
+              ),
+            ),
+            VerticalDivider(
+              color: Colors.grey,
+              thickness: 1,
+              width: 1,
+            ),
+            Expanded(
+              flex: 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 40,
+                  ),
+                  SizedBox(
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                      ),
+                      onPressed: () {
+                        showDatePicker(
+                          context: context,
+                          initialDate: dateTimeNotifier.selectedDate,
+                          firstDate:
+                              DateTime.now().subtract(Duration(days: 365)),
+                          lastDate: DateTime.now().add(Duration(days: 365)),
+                        ).then((value) {
+                          if (value != null) {
+                            dateTimeNotifier.selectedDate = value;
+                            print(dateTimeNotifier.selectedDate);
+                          }
+                        });
+                      },
+                      child: DateCard(
+                        date: dateTimeNotifier.selectedDate,
+                      ),
                     ),
                   ),
-                ),
-
-                studentAsyncValue.when(
-                  data: (student) => StudentCard(
-                    student: student as Student,
+                  studentAsyncValue.when(
+                    data: (student) => StudentCard(
+                      student: student as Student,
+                    ),
+                    loading: () => CircularProgressIndicator(),
+                    error: (error, stack) => Text("Error loading data"),
                   ),
-                  loading: () => CircularProgressIndicator(),
-                  error: (error, stack) => Text("Error loading data"),
-                ),
-              ],
+                ],
+              ),
             ),
+          ],
+        ),
+      );
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("30일 챌린지",
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
+          backgroundColor: Colors.blue,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.logout),
+              color: Colors.white,
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+              },
+            )
+          ],
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.8,
+                child: SingleChildScrollView(
+                  child: taskListProvider.when(
+                    data: (dailyTaskList) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: dailyTaskList.getTasksBySubject().keys.map(
+                          (e) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  e,
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                ...dailyTaskList
+                                    .getTasksBySubject()[e]!
+                                    .map((e) => TaskCard(
+                                          task: e,
+                                          currentDate:
+                                              dateTimeNotifier.selectedDate,
+                                          deleteTask: () {
+                                            deleteTask(e.id,
+                                                dateTimeNotifier.selectedDate);
+                                            print(
+                                                dateTimeNotifier.selectedDate);
+                                            //refresh page with gorouters
+                                            GoRouter.of(context).refresh();
+                                            print("refreshed");
+                                            print(dateTimeNotifier.selectedDate
+                                                .toString());
+                                          },
+                                          updateTask: (newTask) {
+                                            updateTask(e.id, newTask,
+                                                dateTimeNotifier.selectedDate);
+                                            GoRouter.of(context).refresh();
+                                          },
+                                          uploadImage: (image) {
+                                            uploadImage(e.id, image,
+                                                dateTimeNotifier.selectedDate);
+                                            GoRouter.of(context).refresh();
+                                          },
+                                        ))
+                                    .toList(),
+                              ],
+                            );
+                          },
+                        ).toList(),
+                      );
+                    },
+                    loading: () => CircularProgressIndicator(),
+                    error: (error, stack) {
+                      print(stack);
+                      return Text("Error loading data");
+                    },
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (dateTimeNotifier.selectedDate
+                          .difference(DateTime.now())
+                          .inDays <
+                      0) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: Text("에러"),
+                        content: Text("기한이 지난 과제는 삭제할 수 없습니다."),
+                      ),
+                    );
+                    return;
+                  }
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return TaskAddCard(
+                        date: dateTimeNotifier.selectedDate,
+                      );
+                    },
+                  );
+                },
+                child: const Text("새 목표 추가",
+                    style: TextStyle(fontSize: 13, color: Colors.black)),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ),
+        drawer: Drawer(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 40,
+              ),
+              SizedBox(
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    showDatePicker(
+                      context: context,
+                      initialDate: dateTimeNotifier.selectedDate,
+                      firstDate: DateTime.now().subtract(Duration(days: 365)),
+                      lastDate: DateTime.now().add(Duration(days: 365)),
+                    ).then((value) {
+                      if (value != null) {
+                        dateTimeNotifier.selectedDate = value;
+                        print(dateTimeNotifier.selectedDate);
+                      }
+                    });
+                  },
+                  child: DateCard(
+                    date: dateTimeNotifier.selectedDate,
+                  ),
+                ),
+              ),
+              studentAsyncValue.when(
+                data: (student) => StudentCard(
+                  student: student as Student,
+                ),
+                loading: () => CircularProgressIndicator(),
+                error: (error, stack) => Text("Error loading data"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
   Future<String> deleteTask(String id, DateTime dateShown) async {

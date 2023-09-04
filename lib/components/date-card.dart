@@ -8,31 +8,58 @@ class DateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      color: Colors.transparent,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Text(
-              DateFormat('EEEE, MMMM d, y').format(date),
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
-            Text(
-              date.difference(today).inDays == 0
-                  ? 'Today'
-                  : date.difference(today).inDays == 1
-                      ? 'Tomorrow'
-                      : date.difference(today).inDays == -1
-                          ? 'Yesterday'
-                          : '',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+    if (MediaQuery.of(context).size.width > 600) {
+      return Card(
+        elevation: 0,
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text(
+                DateFormat('EEEE, MMMM d, y').format(date),
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+              Text(
+                date.difference(today).inDays == 0
+                    ? 'Today'
+                    : date.difference(today).inDays == 1
+                        ? 'Tomorrow'
+                        : date.difference(today).inDays == -1
+                            ? 'Yesterday'
+                            : '',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ],
+          ),
         ),
-      ),
-
-    );
+      );
+    } else {
+      return Card(
+        elevation: 0,
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text(
+                DateFormat('EEEE, MMMM d, y').format(date),
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Text(
+                date.difference(today).inDays == 0
+                    ? 'Today'
+                    : date.difference(today).inDays == 1
+                        ? 'Tomorrow'
+                        : date.difference(today).inDays == -1
+                            ? 'Yesterday'
+                            : '',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 }

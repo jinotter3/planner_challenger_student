@@ -8,7 +8,8 @@ class StudentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    if(MediaQuery.of(context).size.width > 600){
+          return Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -25,5 +26,26 @@ class StudentCard extends StatelessWidget {
         ),
       ),
     );
+    }
+    else{
+          return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text(
+              '이름: ${student.name}',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              '학번: ${student.studentId}',
+              style: TextStyle(fontSize: 12),
+            ),
+          ],
+        ),
+      ),
+    );
+    }
+
   }
 }
