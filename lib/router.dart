@@ -23,7 +23,7 @@ final routerProvider = Provider<GoRouter>(
           if (user == null) {
             return LoginScreen.routeLocation;
           } else {
-            return LoginScreen.routeLocation;
+            return MainScreen.routeLocation;
           }
         },
         loading: () => SplashScreen.routeLocation,
@@ -47,14 +47,11 @@ final routerProvider = Provider<GoRouter>(
           name: SplashScreen.routeName,
           builder: (context, state) => const SplashScreen(),
         ),
-        // GoRoute(
-        //   path: MainScreen.routeLocation,
-        //   name: MainScreen.routeName,
-        //   builder: (context, state) {
-        //     final user = state.extra as User?;
-        //     return MainScreen(user: user!, today: DateTime.now(),);
-        //   }
-        // ),
+        GoRoute(
+          path: MainScreen.routeLocation,
+          name: MainScreen.routeName,
+          builder: (context, state) => MainScreen(),
+        ),
         GoRoute(
           path: SignUpScreen.routeLocation,
           name: SignUpScreen.routeName,
@@ -68,7 +65,7 @@ final routerProvider = Provider<GoRouter>(
         GoRoute(
           path: InfoScreen.routeLocation,
           name: InfoScreen.routeName,
-          builder: (context, state) => const InfoScreen(),
+          builder: (context, state) => InfoScreen(),
         )
       ],
     );

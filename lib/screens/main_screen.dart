@@ -6,7 +6,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:planner_challenger_student/auth.dart';
+import 'package:planner_challenger_student/auth_service.dart';
 import 'package:planner_challenger_student/components/task-add-card.dart';
+import 'package:planner_challenger_student/screens/info_screen.dart';
+import 'package:planner_challenger_student/screens/login_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../components/date-card.dart';
@@ -17,7 +21,31 @@ import '../models/student.dart';
 import './main_providers.dart';
 
 final class MainScreen extends ConsumerWidget {
-  MainScreen({
+  final AuthService _authService = AuthService();
+  static String get routeName => 'main';
+  static String get routeLocation => '/$routeName';
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    return Scaffold(
+      body: authState.when(
+        data: (user) {
+          if (user == null) {
+            GoRouter.of(context).go(LoginScreen.routeLocation);
+          } else {
+            // GoRouter.of(context).go(MainScreen.routeLocation, extra: user);
+            return _MainScreen(user: user, today: DateTime.now());
+          }
+        },
+        loading: () => CircularProgressIndicator(),
+        error: (_, __) => Text('Error occurred!'),
+      ),
+    );
+  }
+}
+
+final class _MainScreen extends ConsumerWidget {
+  _MainScreen({
     required this.user,
     // required this.dateShown,
     required this.today,
@@ -25,8 +53,6 @@ final class MainScreen extends ConsumerWidget {
   }) : super(key: key);
 
   final User user;
-  // static String get routeName => 'main';
-  // static String get routeLocation => '/$routeName';
   // DateTime dateShown;
   final DateTime today;
 
@@ -48,12 +74,19 @@ final class MainScreen extends ConsumerWidget {
           backgroundColor: Colors.blue,
           actions: [
             IconButton(
+                onPressed: () {
+                  GoRouter.of(context)
+                      .go(InfoScreen.routeLocation, extra: user);
+                },
+                icon: Icon(Icons.emoji_events),
+                color: Colors.white),
+            IconButton(
               icon: Icon(Icons.logout),
               color: Colors.white,
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
               },
-            )
+            ),
           ],
         ),
         body: Row(
@@ -104,8 +137,11 @@ final class MainScreen extends ConsumerWidget {
                                           GoRouter.of(context).refresh();
                                         },
                                         uploadImage: (image) {
-                                          uploadImage(e.id, image,
-                                              dateTimeNotifier.selectedDate);
+                                          uploadImage(
+                                              e.id,
+                                              image,
+                                              dateTimeNotifier.selectedDate,
+                                              context);
                                           GoRouter.of(context).refresh();
                                         },
                                       );
@@ -269,8 +305,11 @@ final class MainScreen extends ConsumerWidget {
                                             GoRouter.of(context).refresh();
                                           },
                                           uploadImage: (image) {
-                                            uploadImage(e.id, image,
-                                                dateTimeNotifier.selectedDate);
+                                            uploadImage(
+                                                e.id,
+                                                image,
+                                                dateTimeNotifier.selectedDate,
+                                                context);
                                             GoRouter.of(context).refresh();
                                           },
                                         ))
@@ -399,13 +438,31 @@ final class MainScreen extends ConsumerWidget {
     return "success";
   }
 
-  Future<String> uploadImage(
-      String id, Uint8List imageData, DateTime dateShown) async {
+  Future<String> uploadImage(String id, Uint8List imageData, DateTime dateShown,
+      BuildContext context) async {
     final storageRef = FirebaseStorage.instance.ref("students/${user.uid}");
     // set image name to task id
     String imageName = id;
     final storageRef2 = storageRef.child(imageName);
     final data = storageRef2.putData(imageData);
+    showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8.0))
+          ),
+          backgroundColor: Colors.black87,
+          content: LoadingIndicator(
+            text: "이미지 업로드 중...",
+          ),
+        )
+      );
+    },
+  );
     data.snapshotEvents.listen((event) {
       print("Progress: ${event.bytesTransferred / event.totalBytes}");
     });
@@ -414,7 +471,56 @@ final class MainScreen extends ConsumerWidget {
       final dbref = FirebaseDatabase.instance.ref(
           "students/${user.uid}/days/${dateShown.toString().split(" ")[0]}/${id}");
       dbref.update({"imageUrl": url, "done": true});
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text("업로드 완료!"),
+          content: Text("목표를 달성했습니다"),
+        ),
+      );
     });
     return "success";
+  }
+
+  Widget LoadingIndicator({required String text}) {
+    return Container(
+        padding: EdgeInsets.all(16),
+        color: Colors.black.withOpacity(0.8),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _getLoadingIndicator(),
+              _getHeading(),
+              _getText(text)
+            ]));
+  }
+
+  Widget _getLoadingIndicator() {
+    return Padding(
+        child: Container(
+            child: CircularProgressIndicator(strokeWidth: 3),
+            width: 32,
+            height: 32),
+        padding: EdgeInsets.only(bottom: 16));
+  }
+
+  Widget _getHeading() {
+    return Padding(
+        child: Text(
+          'Please wait …',
+          style: TextStyle(color: Colors.white, fontSize: 16),
+          textAlign: TextAlign.center,
+        ),
+        padding: EdgeInsets.only(bottom: 4));
+  }
+
+  Widget _getText(String displayedText) {
+    return Text(
+      displayedText,
+      style: TextStyle(color: Colors.white, fontSize: 14),
+      textAlign: TextAlign.center,
+    );
   }
 }

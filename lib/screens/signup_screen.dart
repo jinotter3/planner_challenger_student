@@ -1,7 +1,9 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:planner_challenger_student/auth_service.dart';
+import 'package:planner_challenger_student/screens/login_screen.dart';
 
 class SignUpScreen extends ConsumerWidget {
   final AuthService authService = AuthService();
@@ -15,7 +17,16 @@ class SignUpScreen extends ConsumerWidget {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController studentIdController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  signin(context) async {
+  isNum(String num) {
+    try {
+      int.parse(num);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  signup(context) async {
     if (!_formKey.currentState!.validate()) return;
     try {
       await authService.signUpWithEmail(
@@ -23,6 +34,7 @@ class SignUpScreen extends ConsumerWidget {
           password: passwordController.text,
           name: nameController.text,
           studentId: studentIdController.text);
+          GoRouter.of(context).go(LoginScreen.routeLocation);
     } catch (e) {
       if (e.toString().startsWith('[firebase_auth/email-already-in-use]')) {
         // ignore: use_build_context_synchronously
@@ -71,8 +83,8 @@ class SignUpScreen extends ConsumerWidget {
                       return null;
                     },
                     decoration: InputDecoration(labelText: 'Email'),
-                    onFieldSubmitted: (value){
-                      signin(context);
+                    onFieldSubmitted: (value) {
+                      signup(context);
                     },
                   ),
                   TextFormField(
@@ -88,7 +100,7 @@ class SignUpScreen extends ConsumerWidget {
                     },
                     decoration: InputDecoration(labelText: 'Password'),
                     onFieldSubmitted: (value) {
-                      signin(context);
+                      signup(context);
                     },
                   ),
                   TextFormField(
@@ -104,7 +116,7 @@ class SignUpScreen extends ConsumerWidget {
                     },
                     decoration: InputDecoration(labelText: 'Confirm Password'),
                     onFieldSubmitted: (value) {
-                      signin(context);
+                      signup(context);
                     },
                   ),
                   TextFormField(
@@ -116,27 +128,31 @@ class SignUpScreen extends ConsumerWidget {
                       return null;
                     },
                     decoration: InputDecoration(labelText: 'Name'),
-                    onFieldSubmitted: (value){
-                      signin(context);
+                    onFieldSubmitted: (value) {
+                      signup(context);
                     },
                   ),
                   TextFormField(
                     controller: studentIdController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your student ID';
+                        return '문항 수를 입력해주세요';
+                      }
+                      //is value is int
+                      else if (isNum(value) == false) {
+                        return '문항 수는 숫자로 입력해주세요';
                       }
                       return null;
                     },
                     decoration: InputDecoration(labelText: 'Student ID'),
-                    onFieldSubmitted: (value){
-                      signin(context);
+                    onFieldSubmitted: (value) {
+                      signup(context);
                     },
                   ),
                   SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () async {
-                      signin(context);
+                      signup(context);
                     },
                     child: Text("Sign Up"),
                   ),

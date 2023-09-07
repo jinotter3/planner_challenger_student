@@ -9,7 +9,7 @@ import 'signup_screen.dart';
 
 class LoginScreen extends ConsumerWidget {
   final AuthService _authService = AuthService();
-  static String get routeName => 'main';
+  static String get routeName => 'login';
   static String get routeLocation => '/$routeName';
 
   @override
@@ -23,7 +23,7 @@ class LoginScreen extends ConsumerWidget {
             return _LoginScreen(authService: _authService);
           } else {
             // GoRouter.of(context).go(MainScreen.routeLocation, extra: user);
-            return MainScreen(user: user, today: DateTime.now());
+            return MainScreen();
           }
         },
         loading: () => CircularProgressIndicator(),
