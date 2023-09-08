@@ -23,7 +23,7 @@ class LoginScreen extends ConsumerWidget {
             return _LoginScreen(authService: _authService);
           } else {
             // GoRouter.of(context).go(MainScreen.routeLocation, extra: user);
-            return MainScreen();
+            GoRouter.of(context).go(MainScreen.routeLocation);
           }
         },
         loading: () => CircularProgressIndicator(),
