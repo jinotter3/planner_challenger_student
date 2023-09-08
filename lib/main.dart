@@ -28,9 +28,6 @@ class MainApp extends ConsumerWidget {
       routerDelegate: router.routerDelegate,
       routeInformationProvider: router.routeInformationProvider,
       title: 'Planner Challenger',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
     );
   }
 }

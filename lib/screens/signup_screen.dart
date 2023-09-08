@@ -34,7 +34,7 @@ class SignUpScreen extends ConsumerWidget {
           password: passwordController.text,
           name: nameController.text,
           studentId: studentIdController.text);
-          GoRouter.of(context).go(LoginScreen.routeLocation);
+      GoRouter.of(context).go(LoginScreen.routeLocation);
     } catch (e) {
       if (e.toString().startsWith('[firebase_auth/email-already-in-use]')) {
         // ignore: use_build_context_synchronously
@@ -61,103 +61,168 @@ class SignUpScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: Center(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: 420,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  Spacer(),
-                  TextFormField(
-                    controller: emailController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      } else if (EmailValidator.validate(value) == false) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(labelText: 'Email'),
-                    onFieldSubmitted: (value) {
-                      signup(context);
-                    },
-                  ),
-                  TextFormField(
-                    controller: passwordController,
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      } else if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(labelText: 'Password'),
-                    onFieldSubmitted: (value) {
-                      signup(context);
-                    },
-                  ),
-                  TextFormField(
-                    controller: passwordConfirmController,
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please confirm your password';
-                      } else if (value != passwordController.text) {
-                        return 'Password does not match';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(labelText: 'Confirm Password'),
-                    onFieldSubmitted: (value) {
-                      signup(context);
-                    },
-                  ),
-                  TextFormField(
-                    controller: nameController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your name';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(labelText: 'Name'),
-                    onFieldSubmitted: (value) {
-                      signup(context);
-                    },
-                  ),
-                  TextFormField(
-                    controller: studentIdController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return '문항 수를 입력해주세요';
-                      }
-                      //is value is int
-                      else if (isNum(value) == false) {
-                        return '문항 수는 숫자로 입력해주세요';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(labelText: 'Student ID'),
-                    onFieldSubmitted: (value) {
-                      signup(context);
-                    },
-                  ),
-                  SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: () async {
-                      signup(context);
-                    },
-                    child: Text("Sign Up"),
-                  ),
-                  Spacer(),
-                ],
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.bottomRight,
+          end: Alignment.topLeft,
+          colors: [
+            Color(0xff0066FF).withOpacity(0.6),
+            Color(0xffC566FF).withOpacity(0.5),
+          ],
+        )),
+        child: Center(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: 420,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Spacer(),
+                    TextFormField(
+                      controller: emailController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        } else if (EmailValidator.validate(value) == false) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      decoration: const InputDecoration(
+                            labelText: 'Email',
+                            labelStyle: TextStyle(color: Colors.white),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                      onFieldSubmitted: (value) {
+                        signup(context);
+                      },
+                    ),
+                    TextFormField(
+                      controller: passwordController,
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        } else if (value.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      decoration: const InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: TextStyle(color: Colors.white),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                      onFieldSubmitted: (value) {
+                        signup(context);
+                      },
+                    ),
+                    TextFormField(
+                      controller: passwordConfirmController,
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        } else if (value != passwordController.text) {
+                          return 'Password does not match';
+                        }
+                        return null;
+                      },
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      decoration: const InputDecoration(
+                            labelText: 'Confirm Password',
+                            labelStyle: TextStyle(color: Colors.white),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                      onFieldSubmitted: (value) {
+                        signup(context);
+                      },
+                    ),
+                    TextFormField(
+                      controller: nameController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your name';
+                        }
+                        return null;
+                      },
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      decoration: const InputDecoration(
+                            labelText: 'Name',
+                            labelStyle: TextStyle(color: Colors.white),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                      onFieldSubmitted: (value) {
+                        signup(context);
+                      },
+                    ),
+                    TextFormField(
+                      controller: studentIdController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return '문항 수를 입력해주세요';
+                        }
+                        //is value is int
+                        else if (isNum(value) == false) {
+                          return '문항 수는 숫자로 입력해주세요';
+                        }
+                        return null;
+                      },
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      decoration: const InputDecoration(
+                            labelText: 'Student ID',
+                            labelStyle: TextStyle(color: Colors.white),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                      onFieldSubmitted: (value) {
+                        signup(context);
+                      },
+                    ),
+                    SizedBox(height: 16.0),
+                    ElevatedButton(
+                      onPressed: () async {
+                        signup(context);
+                      },
+                      child: Text("Sign Up"),
+                      style: ElevatedButton.styleFrom(
+                            primary: Colors.transparent,
+                            onPrimary: Colors.white,
+                          ),
+                    ),
+                    Spacer(),
+                  ],
+                ),
               ),
             ),
           ),

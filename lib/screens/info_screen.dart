@@ -54,71 +54,70 @@ class _InfoScreenState extends State<_InfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("랭킹",
-            style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white)),
-        backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-              onPressed: () {
-                GoRouter.of(context).go(MainScreen.routeLocation);
-              },
-              icon: Icon(Icons.home),
-              color: Colors.white),
-          IconButton(
-            icon: Icon(Icons.logout),
-            color: Colors.white,
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-            },
-          ),
-        ],
-      ),
-      body: Center(child: Text("구현하려고 노력중입니다")),
-    );
     // return Scaffold(
-    //     appBar: AppBar(
-    //       title: Text("랭킹",
-    //           style: TextStyle(
-    //               fontSize: 24,
-    //               fontWeight: FontWeight.bold,
-    //               color: Colors.white)),
-    //       backgroundColor: Colors.blue,
-    //       actions: [
-    //         IconButton(
-    //             onPressed: () {
-    //               GoRouter.of(context).go(MainScreen.routeLocation);
-    //             },
-    //             icon: Icon(Icons.home),
-    //             color: Colors.white),
-    //         IconButton(
-    //           icon: Icon(Icons.logout),
-    //           color: Colors.white,
-    //           onPressed: () async {
-    //             await FirebaseAuth.instance.signOut();
+    //   appBar: AppBar(
+    //     title: Text("랭킹",
+    //         style: TextStyle(
+    //             fontSize: 24,
+    //             fontWeight: FontWeight.bold,
+    //             color: Colors.white)),
+    //     backgroundColor: Colors.blue,
+    //     actions: [
+    //       IconButton(
+    //           onPressed: () {
+    //             GoRouter.of(context).go(MainScreen.routeLocation);
     //           },
-    //         ),
-    //       ],
-    //     ),
-    //     body: Row(
-    //       children: [
-    //         Expanded(
-    //             child: FirebaseAnimatedList(
-    //           query: dbref,
-    //           itemBuilder: (BuildContext context, DataSnapshot snapshot,
-    //               Animation<double> animation, int index) {
-    //             Map student = snapshot.value as Map;
-    //             student['key'] = snapshot.key;
-    //             String key = snapshot.key.toString();
-    //             return StudentRankCard(student: student);
-    //           },
-    //         ),
-    //         ),
-    //       ],
-    //     ));
+    //           icon: Icon(Icons.home),
+    //           color: Colors.white),
+    //       IconButton(
+    //         icon: Icon(Icons.logout),
+    //         color: Colors.white,
+    //         onPressed: () async {
+    //           await FirebaseAuth.instance.signOut();
+    //         },
+    //       ),
+    //     ],
+    //   ),
+    //   body: Center(child: Text("구현하려고 노력중입니다")),
+    // );
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("랭킹",
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
+          backgroundColor: Colors.blue,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  GoRouter.of(context).go(MainScreen.routeLocation);
+                },
+                icon: Icon(Icons.home),
+                color: Colors.white),
+            IconButton(
+              icon: Icon(Icons.logout),
+              color: Colors.white,
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+              },
+            ),
+          ],
+        ),
+        body: Row(
+          children: [
+            Expanded(
+                child: FirebaseAnimatedList(
+              query: dbref,
+              itemBuilder: (BuildContext context, DataSnapshot snapshot,
+                  Animation<double> animation, int index) {
+                Map student = snapshot.value as Map;
+                print(student);
+                return StudentRankCard(student: student);
+              },
+            ),
+            ),
+          ],
+        ));
   }
 }

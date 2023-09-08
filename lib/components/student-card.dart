@@ -8,44 +8,44 @@ class StudentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if(MediaQuery.of(context).size.width > 600){
-          return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Text(
-              '이름: ${student.name}',
-              style: TextStyle(fontSize: 20),
-            ),
-            Text(
-              '학번: ${student.studentId}',
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
+    if (MediaQuery.of(context).size.width > 600) {
+      return Card(
+        elevation: 0,
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text(
+                '이름: ${student.name}',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '학번: ${student.studentId}',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-    }
-    else{
-          return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Text(
-              '이름: ${student.name}',
-              style: TextStyle(fontSize: 16),
-            ),
-            Text(
-              '학번: ${student.studentId}',
-              style: TextStyle(fontSize: 12),
-            ),
-          ],
+      );
+    } else {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text(
+                '이름: ${student.name}',
+                style: TextStyle(fontSize: 16),
+              ),
+              Text(
+                '학번: ${student.studentId}',
+                style: TextStyle(fontSize: 12),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
     }
-
   }
 }

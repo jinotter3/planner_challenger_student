@@ -30,6 +30,11 @@ class _TaskCardState extends State<TaskCard> {
   Widget build(BuildContext context) {
     if (MediaQuery.of(context).size.width > 600) {
       return Card(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            side: BorderSide(color: Colors.white.withOpacity(0.9), width: 3)),
+        elevation: 0,
+        color: Colors.white.withOpacity(0.2),
         child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.5,
           child: Padding(
@@ -100,8 +105,10 @@ class _TaskCardState extends State<TaskCard> {
                       icon: Icon(Icons.edit),
                       onPressed: () {
                         if ((widget.currentDate
-                                .difference(DateTime.now())
-                                .inHours / 24).round() <
+                                        .difference(DateTime.now())
+                                        .inHours /
+                                    24)
+                                .round() <
                             -1) {
                           showDialog(
                             context: context,
@@ -128,8 +135,10 @@ class _TaskCardState extends State<TaskCard> {
                       icon: Icon(Icons.delete_outline_outlined),
                       onPressed: () {
                         if ((widget.currentDate
-                                .difference(DateTime.now())
-                                .inHours / 24).round() <
+                                        .difference(DateTime.now())
+                                        .inHours /
+                                    24)
+                                .round() <
                             -1) {
                           showDialog(
                             context: context,
@@ -168,8 +177,10 @@ class _TaskCardState extends State<TaskCard> {
                       icon: Icon(Icons.upload_file),
                       onPressed: () async {
                         if ((widget.currentDate
-                                .difference(DateTime.now())
-                                .inHours / 24).round() <
+                                        .difference(DateTime.now())
+                                        .inHours /
+                                    24)
+                                .round() <
                             -1) {
                           showDialog(
                             context: context,
@@ -202,6 +213,11 @@ class _TaskCardState extends State<TaskCard> {
       );
     } else {
       return Card(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            side: BorderSide(color: Colors.white.withOpacity(0.9), width: 3)),
+        elevation: 0,
+        color: Colors.white.withOpacity(0.2),
         child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.9,
           child: Padding(
@@ -272,8 +288,10 @@ class _TaskCardState extends State<TaskCard> {
                       icon: Icon(Icons.edit),
                       onPressed: () {
                         if ((widget.currentDate
-                                .difference(DateTime.now())
-                                .inHours / 24).round() <
+                                        .difference(DateTime.now())
+                                        .inHours /
+                                    24)
+                                .round() <
                             -1) {
                           showDialog(
                             context: context,
@@ -300,8 +318,10 @@ class _TaskCardState extends State<TaskCard> {
                       icon: Icon(Icons.delete_outline_outlined),
                       onPressed: () {
                         if ((widget.currentDate
-                                .difference(DateTime.now())
-                                .inHours / 24).round() <
+                                        .difference(DateTime.now())
+                                        .inHours /
+                                    24)
+                                .round() <
                             -1) {
                           showDialog(
                             context: context,
@@ -340,8 +360,10 @@ class _TaskCardState extends State<TaskCard> {
                       icon: Icon(Icons.upload_file),
                       onPressed: () async {
                         if ((widget.currentDate
-                                .difference(DateTime.now())
-                                .inHours / 24).round() <
+                                        .difference(DateTime.now())
+                                        .inHours /
+                                    24)
+                                .round() <
                             -1) {
                           showDialog(
                             context: context,

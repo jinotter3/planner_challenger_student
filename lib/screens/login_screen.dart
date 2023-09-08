@@ -111,73 +111,114 @@ class _LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Center(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: 420,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Spacer(),
-                      const Text("Login Page"),
-                      TextFormField(
-                        controller: emailController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
-                          } else if (EmailValidator.validate(value) == false) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(labelText: 'Email'),
-                        onFieldSubmitted: (value) async {
-                          login(context);
-                        },
-                      ),
-                      TextFormField(
-                        controller: passwordController,
-                        obscureText: true,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
-                          } else if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
-                          }
-                          return null;
-                        },
-                        decoration:
-                            const InputDecoration(labelText: 'Password'),
-                        onFieldSubmitted: (value) async {
-                          login(context);
-                        },
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          login(context);
-                        },
-                        child: const Text("Login"),
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          GoRouter.of(context).go(SignUpScreen.routeLocation);
-                        },
-                        child: const Text("Sign Up"),
-                      ),
-                      Spacer(),
-                    ],
+        child: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+            begin: Alignment.bottomRight,
+            end: Alignment.topLeft,
+            colors: [
+              Color(0xff0066FF).withOpacity(0.6),
+              Color(0xffC566FF).withOpacity(0.5),
+            ],
+          )),
+          child: Center(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              width: 420,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Spacer(),
+                        const Text("Login Page",
+                            style:
+                                TextStyle(fontSize: 24, color: Colors.white)),
+                        TextFormField(
+                          style: TextStyle(color: Colors.white),
+                          controller: emailController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            } else if (EmailValidator.validate(value) ==
+                                false) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            labelStyle: TextStyle(color: Colors.white),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                          onFieldSubmitted: (value) async {
+                            login(context);
+                          },
+                        ),
+                        TextFormField(
+                          style: TextStyle(color: Colors.white),
+                          controller: passwordController,
+                          obscureText: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            } else if (value.length < 6) {
+                              return 'Password must be at least 6 characters';
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: TextStyle(color: Colors.white),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                          onFieldSubmitted: (value) async {
+                            login(context);
+                          },
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            login(context);
+                          },
+                          child: const Text("Login"),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.transparent,
+                            onPrimary: Colors.white,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              GoRouter.of(context)
+                                  .go(SignUpScreen.routeLocation);
+                            },
+                            child: const Text("Sign Up"),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.transparent,
+                              onPrimary: Colors.white,
+                            )),
+                        Spacer(),
+                      ],
+                    ),
                   ),
                 ),
               ),
