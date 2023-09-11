@@ -31,7 +31,15 @@ class AuthService {
       "days": [],
     });
   }
-
+  Future<void> sendRanking({required User user, required String name, required String studentId, required int days}) async {
+    final databaseReference = FirebaseDatabase.instance.ref();
+    await databaseReference.child('ranking/${user.uid}/info').set({
+      "name": name,
+      "studentId": studentId,
+      "id": user.uid,
+      "days": days,
+    });
+  }
   Future<Student> signInWithEmail(
       {required String email, required String password}) async {
     final auth = FirebaseAuth.instance;

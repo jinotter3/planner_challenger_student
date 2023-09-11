@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:planner_challenger_student/auth.dart';
 import 'package:planner_challenger_student/auth_service.dart';
@@ -46,6 +48,7 @@ final class MainScreen extends ConsumerWidget {
 }
 
 final class _MainScreen extends ConsumerWidget {
+  final AuthService _authService = AuthService();
   _MainScreen({
     required this.user,
     // required this.dateShown,
@@ -115,8 +118,25 @@ final class _MainScreen extends ConsumerWidget {
                         width: 45,
                         height: 45,
                         child: ElevatedButton(
-                            onPressed: () {
-                              GoRouter.of(context).go(InfoScreen.routeLocation);
+                            onPressed: () async {
+                              studentAsyncValue.when(
+                                data: (student) async {
+                                  final studentUser = student as Student;
+                                  final name = studentUser.name;
+                                  final studentId = studentUser.studentId;
+                                  final days = await getDays(ref);
+                                  await _authService.sendRanking(
+                                      user: user,
+                                      name: name,
+                                      studentId: studentId,
+                                      days: days);
+                                  GoRouter.of(context)
+                                      .go(InfoScreen.routeLocation);
+                                },
+                                loading: () {},
+                                error: (error, stack) =>
+                                    Text("Error loading data"),
+                              );
                             },
                             child: Icon(Icons.emoji_events_outlined,
                                 color: Colors.black),
@@ -389,7 +409,27 @@ final class _MainScreen extends ConsumerWidget {
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
               },
-            )
+            ),
+            IconButton(
+                onPressed: () async {
+                  studentAsyncValue.when(
+                    data: (student) async {
+                      final studentUser = student as Student;
+                      final name = studentUser.name;
+                      final studentId = studentUser.studentId;
+                      final days = await getDays(ref);
+                      await _authService.sendRanking(
+                          user: user,
+                          name: name,
+                          studentId: studentId,
+                          days: days);
+                      GoRouter.of(context).go(InfoScreen.routeLocation);
+                    },
+                    loading: () {},
+                    error: (error, stack) => Text("Error loading data"),
+                  );
+                },
+                icon: Icon(Icons.emoji_events_outlined, color: Colors.white))
           ],
         ),
         body: Container(
@@ -675,5 +715,70 @@ final class _MainScreen extends ConsumerWidget {
       style: TextStyle(color: Colors.white, fontSize: 14),
       textAlign: TextAlign.center,
     );
+  }
+
+  getDays(WidgetRef ref) async {
+    // final today = DateTime.now();
+    // for (int i = 0; i < 30; i++) {
+    //   final date = today.subtract(Duration(days: i + 1));
+    //   Query dbref = FirebaseDatabase.instance
+    //       .ref()
+    //       .child("students")
+    //       .child(FirebaseAuth.instance.currentUser!.uid)
+    //       .child("days")
+    //       .child(date.toString().split(" ")[0]);
+    //   final DatabaseEvent event = await dbref.once();
+    //   if (event.snapshot.value == null) {
+    //   } else {
+    //     final map = event.snapshot.value as Map<dynamic, dynamic>;
+    //     final tasks = map.keys.toList();
+    //     // for (int i = 0; i < tasks.length; i++) {
+    //     //   final task = map[tasks[i]];
+    //     //   print(task);
+    //     // }
+    //     print(map);
+    //   }
+    // }
+    Query dbref = FirebaseDatabase.instance
+        .ref()
+        .child("students")
+        .child(FirebaseAuth.instance.currentUser!.uid)
+        .child("days")
+        .orderByKey();
+    final DatabaseEvent event = await dbref.once();
+    if (event.snapshot.value == null) {
+      return 0;
+    } else {
+      final map = event.snapshot.value as Map<dynamic, dynamic>;
+      final days = map.keys.toList();
+      // final tasks = map.values.toList();
+      final tasks = map.values;
+      print(days.length);
+      // print(tasks[0]);
+      // int temp = 0;
+      // int consecutive = 0;
+      int success = 0;
+      for (int i = 0; i < days.length; i++) {
+        final taskMap = map[days[i]] as Map<dynamic, dynamic>;
+        final tasksKeys = taskMap.keys.toList();
+        for (int j = 0; j < tasksKeys.length; j++) {
+          final task = taskMap[tasksKeys[j]];
+          if (task['done'] == true) {
+            success++;
+            break;
+          } else {
+            // if (temp > consecutive) {
+            //   consecutive = temp;
+            // }
+            // temp = 0;
+          }
+        }
+      }
+      return success;
+    }
+    // var it = tasks.iterator;
+    // while (it.moveNext()) {
+    //   print(it.current());
+    // }
   }
 }

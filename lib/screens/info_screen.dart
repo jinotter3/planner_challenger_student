@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -49,8 +51,8 @@ class _InfoScreen extends StatefulWidget {
 class _InfoScreenState extends State<_InfoScreen> {
   Query dbref = FirebaseDatabase.instance
       .ref()
-      .child("students")
-      .orderByChild('info/studentId');
+      .child("ranking")
+      .orderByChild('info/days');
 
   @override
   Widget build(BuildContext context) {
@@ -80,44 +82,161 @@ class _InfoScreenState extends State<_InfoScreen> {
     //   ),
     //   body: Center(child: Text("구현하려고 노력중입니다")),
     // );
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("랭킹",
-              style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white)),
-          backgroundColor: Colors.blue,
-          actions: [
+    if (MediaQuery.of(context).size.width > 600) {
+      return Scaffold(
+          body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.bottomRight,
+          end: Alignment.topLeft,
+          colors: [
+            Color(0xff0066FF).withOpacity(0.6),
+            Color(0xffC566FF).withOpacity(0.5),
+          ],
+        )),
+        child: Column(
+          children: [
+            Expanded(
+                flex: 6,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 45,
+                      height: 45,
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            await FirebaseAuth.instance.signOut();
+                          },
+                          child:
+                              Icon(Icons.logout_outlined, color: Colors.black),
+                          style: ButtonStyle(
+                              shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      side: BorderSide(
+                                          color: Colors.white.withOpacity(0.9),
+                                          width: 3))),
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.white.withOpacity(0.2)),
+                              padding:
+                                  MaterialStateProperty.all<EdgeInsetsGeometry>(
+                                      EdgeInsets.all(0.0)))),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    SizedBox(
+                      width: 45,
+                      height: 45,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            GoRouter.of(context).go(MainScreen.routeLocation);
+                          },
+                          child: Icon(Icons.home_outlined, color: Colors.black),
+                          style: ButtonStyle(
+                              shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      side: BorderSide(
+                                          color: Colors.white.withOpacity(0.9),
+                                          width: 3))),
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.white.withOpacity(0.2)),
+                              padding:
+                                  MaterialStateProperty.all<EdgeInsetsGeometry>(
+                                      EdgeInsets.all(0.0)))),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                  ],
+                )),
+            Expanded(
+              flex: 94,
+              child: Row(
+                children: [
+                  Expanded(flex: 1, child: Container()),
+                  Expanded(
+                    flex: 1,
+                    child: FirebaseAnimatedList(
+                      query: dbref,
+                      itemBuilder: (BuildContext context, DataSnapshot snapshot,
+                          Animation<double> animation, int index) {
+                        Map ranking = snapshot.value as Map;
+                        print(index);
+                        return StudentRankCard(student: ranking);
+                      },
+                    ),
+                  ),
+                  Expanded(flex: 1, child: Container()),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ));
+    } else {
+      return Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: AppBar(backgroundColor: Colors.transparent, actions: [
             IconButton(
-                onPressed: () {
-                  GoRouter.of(context).go(MainScreen.routeLocation);
-                },
-                icon: Icon(Icons.home),
-                color: Colors.white),
-            IconButton(
-              icon: Icon(Icons.logout),
+              icon: Icon(Icons.logout_outlined),
               color: Colors.white,
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
               },
             ),
-          ],
-        ),
-        body: Row(
-          children: [
-            Expanded(
-                child: FirebaseAnimatedList(
-              query: dbref,
-              itemBuilder: (BuildContext context, DataSnapshot snapshot,
-                  Animation<double> animation, int index) {
-                Map student = snapshot.value as Map;
-                print(student);
-                return StudentRankCard(student: student);
-              },
+            IconButton(
+                onPressed: () {
+                  GoRouter.of(context).go(MainScreen.routeLocation);
+                },
+                icon: Icon(Icons.home_outlined),
+                color: Colors.white),
+          ]),
+          body: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
+              colors: [
+                Color(0xff0066FF).withOpacity(0.6),
+                Color(0xffC566FF).withOpacity(0.5),
+              ],
+            )),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: FirebaseAnimatedList(
+                                query: dbref,
+                                itemBuilder: (BuildContext context,
+                                    DataSnapshot snapshot,
+                                    Animation<double> animation,
+                                    int index) {
+                                  Map ranking = snapshot.value as Map;
+                                  return StudentRankCard(student: ranking);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            ),
-          ],
-        ));
+          ));
+    }
   }
 }
